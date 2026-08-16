@@ -1,7 +1,14 @@
 package dev.rohit.buglens;
 
+import dev.rohit.buglens.CollectorEngine.CollectorEngine;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @SpringBootApplication
 public class BuglensApplication {
@@ -10,4 +17,22 @@ public class BuglensApplication {
 		SpringApplication.run(BuglensApplication.class, args);
 	}
 
+	@Bean
+	public CommandLineRunner runCollector() {
+		return args -> {
+			// Define your input and output file paths
+			Path inputPath = Paths.get("buglens/src/test.log");
+			Path outputPath = Paths.get("buglens/logs/output.jsonl");
+
+			if (outputPath.getParent() != null) {
+				Files.createDirectories(outputPath.getParent());
+			}
+
+			// Execute the collector engine
+			CollectorEngine engine = new CollectorEngine(inputPath, outputPath);
+			engine.collectJson();
+
+			System.out.println("Log ingestion complete: " + outputPath.toAbsolutePath());
+		};
+	}
 }
