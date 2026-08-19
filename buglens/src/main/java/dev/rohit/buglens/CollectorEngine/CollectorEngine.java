@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.json.JSONObject;
 
@@ -27,8 +28,13 @@ public class CollectorEngine {
                 BufferedWriter writer = Files.newBufferedWriter(outputPath, StandardCharsets.UTF_8)) {
 
             String line;
+
+            int random4DInt = ThreadLocalRandom.current().nextInt(1000, 10000);
+            String fileId = "file-" + random4DInt;
+
             while ((line = reader.readLine()) != null) {
                 JSONObject log = new JSONObject();
+                log.put("file_id", fileId);
                 log.put("ingestion_id", ShortIdGenerator.generateId(8));
                 log.put("received_at", Instant.now().truncatedTo(ChronoUnit.SECONDS).toString());
                 log.put("file_name", inputPath.getFileName().toString());
@@ -50,3 +56,4 @@ class ShortIdGenerator {
         return "igs-" + randomPart.substring(0, Math.min(length, 32));
     }
 }
+
