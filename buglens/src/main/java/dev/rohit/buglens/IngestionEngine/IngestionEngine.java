@@ -8,7 +8,6 @@ import org.json.JSONObject;
 import dev.rohit.buglens.IngestionEngine.Reader.LogReader;
 import dev.rohit.buglens.IngestionEngine.Structure.LogFormatter;
 import dev.rohit.buglens.IngestionEngine.format.FormatComparator;
-import dev.rohit.buglens.IngestionEngine.format.LogFormatReader;
 
 public class IngestionEngine {
 
@@ -32,8 +31,8 @@ public class IngestionEngine {
             // System.out.println("Structural Format " + (i + 1) + " : " + result);
             // }
 
-            LogFormatReader logFormatReader = new LogFormatReader("buglens/Resources/log_formats.jsonl");
-            JSONObject formatArray = logFormatReader.readFile();
+            // LogFormatReader logFormatReader = new LogFormatReader("buglens/Resources/log_formats.jsonl");
+            // JSONObject formatArray = logFormatReader.readFile();
 
             // System.out.println(formatArray.getJSONArray("formats").toString(2));
 
