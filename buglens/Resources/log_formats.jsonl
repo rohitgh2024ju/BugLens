@@ -1,0 +1,34 @@
+{
+  "formats": [
+    {
+      "format_id": "spring_boot",
+      "name": "Spring Boot / Java Standard Log",
+      "structure": "{TIMESTAMP} {SEVERITY} {BRACKETED_TEXT} {CLASS} {SEPARATOR} {MESSAGE} {KEY_VALUE}*",
+      "parser": "SpringBootParser"
+    },
+    {
+      "format_id": "nodejs",
+      "name": "Node.js Application Log",
+      "structure": "{TIMESTAMP} {SEVERITY} {SEPARATOR} {MESSAGE}",
+      "parser": "NodeJsParser"
+    },
+    {
+      "format_id": "nginx_access",
+      "name": "Nginx Access Log",
+      "structure": "{IP_ADDRESS} {SEPARATOR} {SEPARATOR} {BRACKETED_TEXT} {QUOTED_TEXT} {NUMBER} {NUMBER} {QUOTED_TEXT} {QUOTED_TEXT}",
+      "parser": "NginxAccessParser"
+    },
+    {
+      "format_id": "apache_common",
+      "name": "Apache Common Log",
+      "structure": "{IP_ADDRESS} {SEPARATOR} {SEPARATOR} {BRACKETED_TEXT} {QUOTED_TEXT} {NUMBER} {NUMBER}",
+      "parser": "ApacheLogParser"
+    },
+    {
+      "format_id": "generic_json",
+      "name": "JSON Structured Log",
+      "structure": "{JSON_OBJECT}",
+      "parser": "JsonLogParser"
+    }
+  ]
+}

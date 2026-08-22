@@ -1,6 +1,9 @@
-package dev.rohit.buglens.IngestionEngine;
+package dev.rohit.buglens.IngestionEngine.Structure;
 
 import java.util.regex.Pattern;
+
+import dev.rohit.buglens.IngestionEngine.StructuralRegex;
+import dev.rohit.buglens.IngestionEngine.StructuralRegexImpl;
 
 public class LogFormatter {
 
@@ -50,12 +53,18 @@ public class LogFormatter {
         // 6. Catch-All Remaining Words LAST
         logLine = argsPattern.matcher(logLine).replaceAll("{ARGS}");
 
-        return combineArgsToMessage(logLine);
+        logLine = combineArgsToMessage(logLine);
+        return collapseKeyValues(logLine);
     }
 
     private String combineArgsToMessage(String formattedLog) {
         // Matches from the FIRST {ARGS} all the way to the LAST {ARGS}
         return formattedLog.replaceAll("\\{ARGS\\}.*\\{ARGS\\}", "{MESSAGE}")
                 .replaceAll("\\{ARGS\\}", "{MESSAGE}"); // Handles edge case of a single isolated {ARGS}
+    }
+
+    private String collapseKeyValues(String logLine) {
+        // Matches two or more consecutive {KEY_VALUE} tokens separated by spaces
+        return logLine.replaceAll("\\{KEY_VALUE\\}(?:\\s*\\{KEY_VALUE\\})*", "{KEY_VALUE}*");
     }
 }
