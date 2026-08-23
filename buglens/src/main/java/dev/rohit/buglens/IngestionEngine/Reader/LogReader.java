@@ -25,7 +25,7 @@ public class LogReader {
             int count = 0;
             String fileId = null;
 
-            while (count < n && (line = reader.readLine()) != null) {
+            while ((n <= 0 || count < n) && (line = reader.readLine()) != null) {
                 JSONObject logObject = new JSONObject(line);
 
                 fileId = logObject.optString("file_id", null);
