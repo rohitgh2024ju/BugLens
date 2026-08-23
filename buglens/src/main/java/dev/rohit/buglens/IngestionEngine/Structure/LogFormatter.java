@@ -2,9 +2,6 @@ package dev.rohit.buglens.IngestionEngine.Structure;
 
 import java.util.regex.Pattern;
 
-import dev.rohit.buglens.IngestionEngine.StructuralRegex;
-import dev.rohit.buglens.IngestionEngine.StructuralRegexImpl;
-
 public class LogFormatter {
 
     private final StructuralRegex regex = new StructuralRegexImpl();

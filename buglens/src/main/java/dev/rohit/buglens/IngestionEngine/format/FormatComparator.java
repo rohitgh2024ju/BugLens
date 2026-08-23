@@ -11,10 +11,12 @@ import org.json.JSONObject;
 public class FormatComparator {
     private final String inputFormat;
     private final LogFormatReader logFormatReader;
+    private final String fileId;
 
-    public FormatComparator(String inputFormat, String filePath) {
+    public FormatComparator(String inputFormat, String filePath, String fileId) {
         this.inputFormat = inputFormat;
         this.logFormatReader = new LogFormatReader(filePath);
+        this.fileId = fileId;
     }
 
     public List<String[]> compare() throws JSONException, IOException {
@@ -48,7 +50,7 @@ public class FormatComparator {
                     * 100;
             String confidence = String.format("%.2f%%", confidenceValue);
 
-            resultCompare.add(new String[] { formatName, formatParser, confidence });
+            resultCompare.add(new String[] { fileId, formatName, formatParser, confidence });
         }
 
         return resultCompare;
