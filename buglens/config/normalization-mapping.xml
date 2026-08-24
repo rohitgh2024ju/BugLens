@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<NormalizationMappings>
+
+    <!-- Spring Boot / Java Log -->
+    <Format id="spring_boot">
+
+        <!-- Core Event -->
+        <Field source="timestamp" target="timestamp"/>
+
+        <!-- Source -->
+        <Field source="service" target="source.service"/>
+        <Field source="logger" target="source.component"/>
+
+        <!-- Occurrence -->
+        <Field source="severity" target="occurrence.severity"/>
+        <Field source="message" target="occurrence.message"/>
+
+        <!-- Context -->
+        <Field source="requestId" target="context.requestId"/>
+        <Field source="traceId" target="context.traceId"/>
+        <Field source="transactionId" target="context.transactionId"/>
+        <Field source="thread" target="context.thread"/>
+
+        <!-- Metadata -->
+        <Field source="timeout" target="metadata.timeout"/>
+        <Field source="status" target="metadata.status"/>
+        <Field source="retry" target="metadata.retry"/>
+        <Field source="amount" target="metadata.amount"/>
+
+    </Format>
+
+
+    <!-- Node.js Log -->
+    <Format id="nodejs">
+
+        <!-- Core Event -->
+        <Field source="time" target="timestamp"/>
+
+        <!-- Source -->
+        <Field source="service" target="source.service"/>
+        <Field source="module" target="source.component"/>
+
+        <!-- Occurrence -->
+        <Field source="level" target="occurrence.severity"/>
+        <Field source="message" target="occurrence.message"/>
+
+        <!-- Context -->
+        <Field source="request_id" target="context.requestId"/>
+        <Field source="trace_id" target="context.traceId"/>
+
+    </Format>
+
+
+    <!-- Nginx Access Log -->
+    <Format id="nginx_access">
+
+        <Field source="timestamp" target="timestamp"/>
+
+        <Field source="server" target="source.service"/>
+
+        <Field source="request" target="occurrence.message"/>
+        <Field source="status" target="metadata.httpStatus"/>
+        <Field source="response_time" target="metadata.responseTime"/>
+
+        <Field source="client_ip" target="context.clientIp"/>
+
+    </Format>
+
+</NormalizationMappings>
