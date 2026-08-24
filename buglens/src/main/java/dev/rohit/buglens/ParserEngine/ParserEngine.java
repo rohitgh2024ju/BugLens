@@ -19,16 +19,21 @@ public class ParserEngine {
         this.logParser = new ParserRegistry(parserClass).find();
     }
 
-    public void runParser() throws JSONException, IOException {
+    public JSONArray runParser() throws JSONException, IOException {
+
         LogReader logReader = new LogReader(inputPath);
         JSONObject logData = logReader.readFile(-1);
         JSONArray logArray = logData.getJSONArray("logs");
 
+        JSONArray parsedLogs = new JSONArray();
+
         for (Object logObj : logArray) {
             String logStr = logObj.toString();
             JSONObject parsedData = logParser.parse(logStr);
-            System.out.println(parsedData.toString(2));
+            parsedLogs.put(parsedData);
         }
+
+        return parsedLogs;
     }
 
     public static void main(String[] args) {
@@ -42,7 +47,8 @@ public class ParserEngine {
                     "buglens/logs/output.jsonl",
                     parser);
 
-            parserEngine.runParser();
+            JSONArray parsedData = parserEngine.runParser();
+            System.out.println(parsedData.toString(2));
 
         } catch (Exception e) {
             e.printStackTrace();
