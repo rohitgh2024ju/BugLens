@@ -8,23 +8,22 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 public class MappingLoader {
 
-    public void load() {
+    private static final String CONFIG_PATH = "buglens/config/normalization-mapping.xml";
+
+    public void details() {
         try {
             XmlMapper xmlMapper = new XmlMapper();
-
-            // Deserialize using the root wrapper class
             NormalizationMappings mappings = xmlMapper.readValue(
-                    new File("buglens/config/normalization-mapping.xml"),
-                    NormalizationMappings.class);
+                    new File(CONFIG_PATH), NormalizationMappings.class);
 
             if (mappings.getFormats() != null) {
                 for (FormatConfig format : mappings.getFormats()) {
                     System.out.println("=== Format ID: " + format.getId() + " ===");
-
                     if (format.getFields() != null) {
                         for (FieldMapping field : format.getFields()) {
                             System.out.println("  Source: " + field.getSource() + " -> Target: " + field.getTarget());
@@ -32,16 +31,46 @@ public class MappingLoader {
                     }
                 }
             }
-
         } catch (IOException e) {
-            System.err.println("Failed to parse normalization-mapping.xml: " + e.getMessage());
+            System.err.println("Failed to parse " + CONFIG_PATH + ": " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    public List<FieldMapping> loadMapper(String targetFormat) {
+        try {
+            XmlMapper xmlMapper = new XmlMapper();
+            File configFile = new File(CONFIG_PATH);
+
+            if (!configFile.exists()) {
+                System.err.println("Configuration file not found at path: " + configFile.getAbsolutePath());
+                return Collections.emptyList();
+            }
+
+            NormalizationMappings mappings = xmlMapper.readValue(configFile, NormalizationMappings.class);
+
+            if (mappings.getFormats() != null) {
+                return mappings.getFormats().stream()
+                        .filter(f -> targetFormat.equals(f.getId()))
+                        .map(FormatConfig::getFields)
+                        .findFirst()
+                        .orElse(Collections.emptyList());
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to parse " + CONFIG_PATH + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return Collections.emptyList();
+    }
+
     public static void main(String[] args) {
         MappingLoader mappingLoader = new MappingLoader();
-        mappingLoader.load();
+        mappingLoader.details();
+
+        List<FieldMapping> springBootFields = mappingLoader.loadMapper("spring_boot");
+        System.out.println("\nLoaded " + springBootFields.size() + " fields for 'spring_boot':");
+        springBootFields.forEach(f -> System.out.println(f.getSource() + " -> " + f.getTarget()));
     }
 }
 

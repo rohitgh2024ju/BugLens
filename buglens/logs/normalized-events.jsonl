@@ -1,0 +1,276 @@
+[ {
+  "id" : "737f27aa-9c6a-494a-9af8-86d84d49def9",
+  "timestamp" : "2026-08-16 20:41:02.145",
+  "source" : {
+    "component" : "com.buglens.payment.PaymentApplication"
+  },
+  "occurrence" : {
+    "severity" : "INFO",
+    "message" : "Starting PaymentApplication v1.0.0"
+  },
+  "context" : {
+    "thread" : "main"
+  },
+  "metadata" : { }
+}, {
+  "id" : "04537603-d918-4e31-8ea2-5a5556db59e5",
+  "timestamp" : "2026-08-16 20:41:03.021",
+  "source" : {
+    "component" : "com.buglens.payment.DatabaseConfig"
+  },
+  "occurrence" : {
+    "severity" : "INFO",
+    "message" : "Database connection established"
+  },
+  "context" : {
+    "thread" : "main"
+  },
+  "metadata" : { }
+}, {
+  "id" : "dcbc9566-b4cd-490c-927e-e3791fe5e9a1",
+  "timestamp" : "2026-08-16 20:41:05.342",
+  "source" : {
+    "component" : "com.buglens.payment.PaymentController"
+  },
+  "occurrence" : {
+    "severity" : "INFO",
+    "message" : "Received payment request"
+  },
+  "context" : {
+    "requestId" : "REQ-1001",
+    "thread" : "http-nio-8080-exec-1"
+  },
+  "metadata" : {
+    "amount" : "1499.00"
+  }
+}, {
+  "id" : "10304aa9-e7ab-4bc9-b65b-7850e72db3a7",
+  "timestamp" : "2026-08-16 20:41:05.417",
+  "source" : {
+    "component" : "com.buglens.payment.PaymentService"
+  },
+  "occurrence" : {
+    "severity" : "INFO",
+    "message" : "Processing payment"
+  },
+  "context" : {
+    "requestId" : "REQ-1001",
+    "thread" : "http-nio-8080-exec-1"
+  },
+  "metadata" : { }
+}, {
+  "id" : "3619e21f-2507-4b0d-98a5-ac75f6a82a36",
+  "timestamp" : "2026-08-16 20:41:05.623",
+  "source" : {
+    "component" : "com.buglens.payment.PaymentService"
+  },
+  "occurrence" : {
+    "severity" : "INFO",
+    "message" : "Payment gateway request initiated"
+  },
+  "context" : {
+    "requestId" : "REQ-1001",
+    "thread" : "http-nio-8080-exec-1"
+  },
+  "metadata" : { }
+}, {
+  "id" : "343541cd-90a8-4053-b377-6edfa52c31d2",
+  "timestamp" : "2026-08-16 20:41:06.812",
+  "source" : {
+    "component" : "com.buglens.payment.PaymentService"
+  },
+  "occurrence" : {
+    "severity" : "WARN",
+    "message" : "Payment gateway response delayed"
+  },
+  "context" : {
+    "requestId" : "REQ-1001",
+    "thread" : "http-nio-8080-exec-1"
+  },
+  "metadata" : { }
+}, {
+  "id" : "fbca479c-a9c8-436c-9d2a-b48de4300982",
+  "timestamp" : "2026-08-16 20:41:08.914",
+  "source" : {
+    "component" : "com.buglens.payment.PaymentGatewayClient"
+  },
+  "occurrence" : {
+    "severity" : "ERROR",
+    "message" : "Payment gateway timeout"
+  },
+  "context" : {
+    "requestId" : "REQ-1001",
+    "thread" : "http-nio-8080-exec-1"
+  },
+  "metadata" : {
+    "timeout" : "3000ms"
+  }
+}, {
+  "id" : "4b3e51b9-c8af-48d5-a264-a2d37fd04864",
+  "timestamp" : "2026-08-16 20:41:08.915",
+  "source" : {
+    "component" : "com.buglens.payment.PaymentService"
+  },
+  "occurrence" : {
+    "severity" : "ERROR",
+    "message" : "Payment processing failed"
+  },
+  "context" : {
+    "requestId" : "REQ-1001",
+    "thread" : "http-nio-8080-exec-1"
+  },
+  "metadata" : { }
+}, {
+  "id" : "b17cead5-341b-4399-bc98-968afa9a841d",
+  "timestamp" : "2026-08-16 20:41:08.916",
+  "source" : {
+    "component" : "com.buglens.payment.PaymentController"
+  },
+  "occurrence" : {
+    "severity" : "ERROR",
+    "message" : "Returning HTTP 500 response"
+  },
+  "context" : {
+    "requestId" : "REQ-1001",
+    "thread" : "http-nio-8080-exec-1"
+  },
+  "metadata" : { }
+}, {
+  "id" : "67ba28af-880c-4511-a1b0-b528e79e6be3",
+  "timestamp" : "2026-08-16 20:41:12.104",
+  "source" : {
+    "component" : "com.buglens.payment.PaymentController"
+  },
+  "occurrence" : {
+    "severity" : "INFO",
+    "message" : "Received payment request"
+  },
+  "context" : {
+    "requestId" : "REQ-1002",
+    "thread" : "http-nio-8080-exec-2"
+  },
+  "metadata" : {
+    "amount" : "799.00"
+  }
+}, {
+  "id" : "df09891a-fdab-4ece-995d-248e69c86219",
+  "timestamp" : "2026-08-16 20:41:12.205",
+  "source" : {
+    "component" : "com.buglens.payment.PaymentService"
+  },
+  "occurrence" : {
+    "severity" : "INFO",
+    "message" : "Processing payment"
+  },
+  "context" : {
+    "requestId" : "REQ-1002",
+    "thread" : "http-nio-8080-exec-2"
+  },
+  "metadata" : { }
+}, {
+  "id" : "7506083a-e574-4503-8c84-6b6df4ee16da",
+  "timestamp" : "2026-08-16 20:41:12.442",
+  "source" : {
+    "component" : "com.buglens.payment.PaymentGatewayClient"
+  },
+  "occurrence" : {
+    "severity" : "INFO",
+    "message" : "Payment gateway request completed"
+  },
+  "context" : {
+    "requestId" : "REQ-1002",
+    "thread" : "http-nio-8080-exec-2"
+  },
+  "metadata" : {
+    "status" : "SUCCESS"
+  }
+}, {
+  "id" : "6677b753-c636-4801-94af-68c9505d0ffb",
+  "timestamp" : "2026-08-16 20:41:12.451",
+  "source" : {
+    "component" : "com.buglens.payment.PaymentService"
+  },
+  "occurrence" : {
+    "severity" : "INFO",
+    "message" : "Payment completed successfully"
+  },
+  "context" : {
+    "requestId" : "REQ-1002",
+    "thread" : "http-nio-8080-exec-2"
+  },
+  "metadata" : { }
+}, {
+  "id" : "820348a4-d2c4-46ad-b46c-2bf55b7f4460",
+  "timestamp" : "2026-08-16 20:42:01.003",
+  "source" : {
+    "component" : "com.buglens.payment.ReconciliationJob"
+  },
+  "occurrence" : {
+    "severity" : "INFO",
+    "message" : "Starting payment reconciliation"
+  },
+  "context" : {
+    "thread" : "scheduler-1"
+  },
+  "metadata" : { }
+}, {
+  "id" : "1fcc4e84-e1da-4316-b940-3890ee2e0071",
+  "timestamp" : "2026-08-16 20:42:03.219",
+  "source" : {
+    "component" : "com.buglens.payment.ReconciliationJob"
+  },
+  "occurrence" : {
+    "severity" : "ERROR",
+    "message" : "Failed to connect to reconciliation database"
+  },
+  "context" : {
+    "thread" : "scheduler-1"
+  },
+  "metadata" : {
+    "retry" : "1"
+  }
+}, {
+  "id" : "63dc67e4-f1be-4d32-95e1-b8718521e421",
+  "timestamp" : "2026-08-16 20:42:05.221",
+  "source" : {
+    "component" : "com.buglens.payment.ReconciliationJob"
+  },
+  "occurrence" : {
+    "severity" : "WARN",
+    "message" : "Retrying database connection"
+  },
+  "context" : {
+    "thread" : "scheduler-1"
+  },
+  "metadata" : { }
+}, {
+  "id" : "75df0236-03b5-4e54-8318-fe145d62b6b2",
+  "timestamp" : "2026-08-16 20:42:07.442",
+  "source" : {
+    "component" : "com.buglens.payment.ReconciliationJob"
+  },
+  "occurrence" : {
+    "severity" : "INFO",
+    "message" : "Database connection restored"
+  },
+  "context" : {
+    "thread" : "scheduler-1"
+  },
+  "metadata" : { }
+}, {
+  "id" : "b282c77d-6837-424e-8978-fa889891a74e",
+  "timestamp" : "2026-08-16 20:42:08.001",
+  "source" : {
+    "component" : "com.buglens.payment.HealthMonitor"
+  },
+  "occurrence" : {
+    "severity" : "INFO",
+    "message" : "Health check completed"
+  },
+  "context" : {
+    "thread" : "main"
+  },
+  "metadata" : {
+    "status" : "UP"
+  }
+} ]

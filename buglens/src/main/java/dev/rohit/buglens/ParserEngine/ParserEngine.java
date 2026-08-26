@@ -40,12 +40,12 @@ public class ParserEngine {
 
         try {
             FormatDetector formatDetector = new FormatDetector();
-            String parser = formatDetector.detect();
-            System.out.println(parser);
+            String parserClass = formatDetector.detect();
+            System.out.println(parserClass);
 
             ParserEngine parserEngine = new ParserEngine(
                     "buglens/logs/output.jsonl",
-                    parser);
+                    parserClass);
 
             JSONArray parsedData = parserEngine.runParser();
             System.out.println(parsedData.toString(2));
