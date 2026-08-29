@@ -2,6 +2,8 @@ package dev.rohit.buglens.NormalizerEngine.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.time.Instant;
+
 
 import org.dizitart.no2.repository.annotations.Entity;
 import org.dizitart.no2.repository.annotations.Id;
@@ -20,7 +22,7 @@ public class NormalizedEvent {
     @Id
     private String id;
 
-    private String timestamp;
+    private Instant timestamp;
 
     @Builder.Default
     private Map<String, Object> source = new HashMap<>();

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.time.Instant;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -56,7 +57,7 @@ public class Normalizer {
                             Object value = convertJsonValue(log.get(sourceKey));
 
                             if ("timestamp".equals(targetKey)) {
-                                event.setTimestamp(value.toString());
+                                event.setTimestamp((Instant) value);
 
                             } else if (targetKey.contains(".")) {
                                 String[] parts = targetKey.split("\\.", 2);
@@ -86,8 +87,9 @@ public class Normalizer {
             for (String key: jsonObject.keySet()) {
                 map.put(key, convertJsonValue(jsonObject.get(key)));
 
-                return map;
+         
             }
+            return map;
         };
 
         if (value instanceof JSONArray jsonArray) {
