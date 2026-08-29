@@ -2,6 +2,9 @@ package dev.rohit.buglens.QueryLayer.config;
 
 import org.dizitart.no2.Nitrite;
 import org.dizitart.no2.mvstore.MVStoreModule;
+
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import org.dizitart.no2.common.mapper.JacksonMapperModule;
 
 import java.io.File;
@@ -48,9 +51,11 @@ public class NitriteMultiTenantConfig {
                 .compress(true)
                 .build();
 
+        JacksonMapperModule jacksonMapperModule = new JacksonMapperModule(new JavaTimeModule());
+
         return Nitrite.builder()
                 .loadModule(storeModule)
-                .loadModule(new JacksonMapperModule())
+                .loadModule(jacksonMapperModule)
                 .openOrCreate();
     }
 
@@ -72,7 +77,7 @@ public class NitriteMultiTenantConfig {
             if (!db.isClosed()) {
                 db.close();
             }
-            return null; 
+            return null;
         });
     }
 }
