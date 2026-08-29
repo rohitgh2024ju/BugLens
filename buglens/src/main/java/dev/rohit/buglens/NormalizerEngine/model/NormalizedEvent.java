@@ -3,17 +3,23 @@ package dev.rohit.buglens.NormalizerEngine.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.dizitart.no2.repository.annotations.Entity;
+import org.dizitart.no2.repository.annotations.Id;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Entity
 @Data
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
 public class NormalizedEvent {
+    @Id
     private String id;
+
     private String timestamp;
 
     @Builder.Default

@@ -1,6 +1,5 @@
 package dev.rohit.buglens.NormalizerEngine;
 
-import java.io.File;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,6 +7,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import dev.rohit.buglens.IngestionEngine.format.FormatDetector;
 import dev.rohit.buglens.NormalizerEngine.model.NormalizedEvent;
+import dev.rohit.buglens.QueryLayer.config.NitriteMultiTenantConfig;
+import dev.rohit.buglens.QueryLayer.repository.EventRepository;
 
 public class NormalizerEngine {
 
@@ -22,19 +23,21 @@ public class NormalizerEngine {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-            File outputFile = new File("buglens/logs/normalized-events.jsonl");
+            // mapper.writeValue(outputFile, eventList);
 
-            if (outputFile.getParentFile() != null) {
-                outputFile.getParentFile().mkdirs();
-            }
+            EventRepository eventRepository = new EventRepository();
+            eventRepository.saveAll("000", eventList);
 
-            mapper.writeValue(outputFile, eventList);
+            System.out.println(" Successfully saved " + eventList.size() + " events.");
 
-            System.out.println(" Successfully saved " + eventList.size()
-                    + " normalized events to: " + outputFile.getAbsolutePath());
+            System.out.println("Checking immediately:");
+
+            eventRepository.viewAll("000");
+
+            NitriteMultiTenantConfig.closeAll();
 
         } catch (Exception e) {
-            System.err.println("Failed to export normalized events to JSON file: " + e.getMessage());
+            System.err.println("Failed to export normalized events to Nitrite Database: " + e.getMessage());
             e.printStackTrace();
         }
     }

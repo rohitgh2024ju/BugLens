@@ -1,7 +1,9 @@
 package dev.rohit.buglens.NormalizerEngine;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.json.JSONArray;
@@ -50,12 +52,12 @@ public class Normalizer {
                         String sourceKey = mapping.getSource();
                         String targetKey = mapping.getTarget();
 
-                        // FIX: check sourceKey for nullability instead of targetKey
                         if (log.has(sourceKey) && !log.isNull(sourceKey)) {
-                            Object value = log.get(sourceKey);
+                            Object value = convertJsonValue(log.get(sourceKey));
 
                             if ("timestamp".equals(targetKey)) {
                                 event.setTimestamp(value.toString());
+
                             } else if (targetKey.contains(".")) {
                                 String[] parts = targetKey.split("\\.", 2);
                                 event.putField(parts[0], parts[1], value);
@@ -76,4 +78,28 @@ public class Normalizer {
 
         return normalizedEvents;
     }
+
+    private Object convertJsonValue(Object value) {
+        if (value instanceof JSONObject jsonObject) {
+            Map<String, Object> map = new HashMap<>();
+
+            for (String key: jsonObject.keySet()) {
+                map.put(key, convertJsonValue(jsonObject.get(key)));
+
+                return map;
+            }
+        };
+
+        if (value instanceof JSONArray jsonArray) {
+            List<Object> list = new ArrayList<>();
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                list.add(convertJsonValue(jsonArray.get(i)));
+            }
+
+            return list;
+        }
+        return value;
+    }
+
 }
