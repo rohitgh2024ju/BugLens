@@ -9,6 +9,7 @@ import dev.rohit.buglens.CorrelationEngine.model.CorrelationType;
 public class CorrelationEngine {
 
     private final String clientId;
+    private List<CorrelationResult> results;
 
     public CorrelationEngine(String clientId) {
         this.clientId = clientId;
@@ -26,15 +27,26 @@ public class CorrelationEngine {
                 : "000";
 
         CorrelationGroup correlationGroup = new CorrelationGroup(idToUse);
+        this.results = correlationGroup.correlate(time, types);
 
-        return correlationGroup.correlate(time, types);
+        return this.results;
+    }
+
+    public void printCorrelation() {
+        if (this.results == null) {
+            throw new IllegalStateException("No correlation results found. Run correlate() first.");
+        }
+
+        this.results.forEach(result -> System.out
+                .println(result.getType() + " || " + result.getKey() + " || " + result.getEvents()));
     }
 
     public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException {
         CorrelationEngine correlationEngine = new CorrelationEngine("000");
         correlationEngine.runCorrelate(
                 1,
-                CorrelationType.REQUEST_ID,
-                CorrelationType.TIME);
+                CorrelationType.THREAD);
+
+        correlationEngine.printCorrelation();
     }
 }

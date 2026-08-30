@@ -46,6 +46,22 @@ public class CorrelationService {
                 .toList();
     }
 
+    public List<CorrelationResult> groupByThread(List<NormalizedEvent> events) {
+        if (events == null) {
+            return List.of();
+        }
+
+        return events.stream()
+                .filter(Objects::nonNull)
+                .filter(event -> event.getContext().get("thread") != null)
+                .collect(Collectors.groupingBy(
+                        event -> event.getContext().get("thread").toString()))
+                .entrySet()
+                .stream()
+                .map(entry -> new CorrelationResult(CorrelationType.THREAD, entry.getKey(), entry.getValue())).toList();
+
+    }
+
     public List<CorrelationResult> groupByTime(
             List<NormalizedEvent> events,
             long seconds) {

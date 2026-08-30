@@ -14,10 +14,9 @@ public class CorrelationGroup {
 
     private final List<NormalizedEvent> allEvents;
     private final CorrelationService correlationService;
+    private List<CorrelationResult> results;
 
-    public CorrelationGroup(String clientId)
-            throws IllegalArgumentException, IllegalAccessException {
-
+    public CorrelationGroup(String clientId) throws IllegalArgumentException, IllegalAccessException {
         EventRepository repository = new EventRepository();
         EventQueryService service = new EventQueryService(repository);
 
@@ -25,69 +24,53 @@ public class CorrelationGroup {
                 .criteria(QueryCriteria.builder().build())
                 .limit(0)
                 .build();
+
         this.allEvents = service.execute(clientId, allQuery);
         this.correlationService = new CorrelationService();
     }
 
-    public List<CorrelationResult> viewCorrelationByRequestId()
-            throws IllegalArgumentException, IllegalAccessException {
-
-        List<CorrelationResult> results = (this.correlationService).groupByRequestId(allEvents);
-
-        results.forEach(result -> System.out
-                .println(result.getType() + " || " + result.getKey() + " || " + result.getEvents()));
-
-        return results;
+    public List<CorrelationResult> viewCorrelationByRequestId() {
+        return this.correlationService.groupByRequestId(allEvents);
     }
 
-    public List<CorrelationResult> viewCorrelationByTraceId()
-            throws IllegalArgumentException, IllegalAccessException {
-
-        List<CorrelationResult> results = (this.correlationService).groupByTraceId(allEvents);
-
-        results.forEach(result -> System.out
-                .println(result.getType() + " || " + result.getKey() + " || " + result.getEvents()));
-
-        return results;
+    public List<CorrelationResult> viewCorrelationByTraceId() {
+        return this.correlationService.groupByTraceId(allEvents);
     }
 
-    public List<CorrelationResult> viewCorrelationByTime(long seconds)
-            throws IllegalArgumentException, IllegalAccessException {
-
-        List<CorrelationResult> results = (this.correlationService).groupByTime(allEvents, seconds);
-
-        results.forEach(result -> System.out
-                .println(result.getType() + " || " + result.getKey() + " || " + result.getEvents()));
-
-        return results;
+    public List<CorrelationResult> viewCorrelationByTime(long seconds) {
+        return this.correlationService.groupByTime(allEvents, seconds);
     }
 
-    public List<CorrelationResult> correlate(long time, CorrelationType... types)
-            throws IllegalArgumentException, IllegalAccessException {
+    public List<CorrelationResult> viewCorrelationByThread() {
+        return this.correlationService.groupByThread(allEvents);
+    }
 
-        List<CorrelationResult> results = new ArrayList<>();
+    public List<CorrelationResult> correlate(long time, CorrelationType... types) {
+        this.results = new ArrayList<>();
+
         for (CorrelationType type : types) {
-
             switch (type) {
-
                 case REQUEST_ID:
-                    results.addAll(viewCorrelationByRequestId());
+                    this.results.addAll(viewCorrelationByRequestId());
                     break;
 
                 case TRACE_ID:
-                    results.addAll(viewCorrelationByTraceId());
+                    this.results.addAll(viewCorrelationByTraceId());
                     break;
 
                 case TIME:
-                    results.addAll(viewCorrelationByTime(time));
+                    this.results.addAll(viewCorrelationByTime(time));
+                    break;
+
+                case THREAD:
+                    this.results.addAll(viewCorrelationByThread());
                     break;
 
                 default:
-                    throw new IllegalArgumentException(
-                            "Unsupported correlation type: " + type);
+                    throw new IllegalArgumentException("Unsupported correlation type: " + type);
             }
         }
 
-        return results;
+        return this.results;
     }
 }
