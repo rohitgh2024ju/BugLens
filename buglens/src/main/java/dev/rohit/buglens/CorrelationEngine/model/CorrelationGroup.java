@@ -1,7 +1,7 @@
 package dev.rohit.buglens.CorrelationEngine.model;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import dev.rohit.buglens.CorrelationEngine.service.CorrelationService;
 import dev.rohit.buglens.NormalizerEngine.model.NormalizedEvent;
@@ -12,8 +12,12 @@ import dev.rohit.buglens.QueryLayer.service.EventQueryService;
 
 public class CorrelationGroup {
 
-    public Map<String, List<NormalizedEvent>> viewCorelationByReqId()
+    private final List<NormalizedEvent> allEvents;
+    private final CorrelationService correlationService;
+
+    public CorrelationGroup(String clientId)
             throws IllegalArgumentException, IllegalAccessException {
+
         EventRepository repository = new EventRepository();
         EventQueryService service = new EventQueryService(repository);
 
@@ -21,79 +25,69 @@ public class CorrelationGroup {
                 .criteria(QueryCriteria.builder().build())
                 .limit(0)
                 .build();
+        this.allEvents = service.execute(clientId, allQuery);
+        this.correlationService = new CorrelationService();
+    }
 
-        List<NormalizedEvent> allEvents = service.execute("000", allQuery);
+    public List<CorrelationResult> viewCorrelationByRequestId()
+            throws IllegalArgumentException, IllegalAccessException {
 
-        CorrelationService correlationService = new CorrelationService();
-        Map<String, List<NormalizedEvent>> results = correlationService.groupByRequestId(allEvents);
+        List<CorrelationResult> results = (this.correlationService).groupByRequestId(allEvents);
 
-        results.forEach((requestId, events) -> {
-
-            System.out.println("\n===== Request ID: " + requestId + " =====");
-
-            events.forEach(event -> {
-                System.out.println("  " + event.getSource() + " || " + event.getTimestamp());
-            });
-
-        });
+        results.forEach(result -> System.out
+                .println(result.getType() + " || " + result.getKey() + " || " + result.getEvents()));
 
         return results;
     }
 
-    public Map<String, List<NormalizedEvent>> viewCorelationByTraceId()
+    public List<CorrelationResult> viewCorrelationByTraceId()
             throws IllegalArgumentException, IllegalAccessException {
-        EventRepository repository = new EventRepository();
-        EventQueryService service = new EventQueryService(repository);
 
-        EventQuery allQuery = EventQuery.builder()
-                .criteria(QueryCriteria.builder().build())
-                .limit(0)
-                .build();
+        List<CorrelationResult> results = (this.correlationService).groupByTraceId(allEvents);
 
-        List<NormalizedEvent> allEvents = service.execute("000", allQuery);
-
-        CorrelationService correlationService = new CorrelationService();
-        Map<String, List<NormalizedEvent>> results = correlationService.groupByTraceId(allEvents);
-
-        results.forEach((traceId, events) -> {
-
-            System.out.println("\n===== Trace ID: " + traceId + " =====");
-
-            events.forEach(event -> {
-                System.out.println("  " + event.getSource() + " || " + event.getTimestamp());
-            });
-
-        });
+        results.forEach(result -> System.out
+                .println(result.getType() + " || " + result.getKey() + " || " + result.getEvents()));
 
         return results;
     }
 
-    public List<List<NormalizedEvent>> viewCorrelationByTime(long seconds) throws IllegalArgumentException, IllegalAccessException {
+    public List<CorrelationResult> viewCorrelationByTime(long seconds)
+            throws IllegalArgumentException, IllegalAccessException {
 
-        EventRepository repository = new EventRepository();
-        EventQueryService service = new EventQueryService(repository);
+        List<CorrelationResult> results = (this.correlationService).groupByTime(allEvents, seconds);
 
-        EventQuery allQuery = EventQuery.builder()
-                .criteria(QueryCriteria.builder().build())
-                .limit(0)
-                .build();
+        results.forEach(result -> System.out
+                .println(result.getType() + " || " + result.getKey() + " || " + result.getEvents()));
 
-        List<NormalizedEvent> allEvents = service.execute("000", allQuery);
-        CorrelationService correlationService = new CorrelationService();
+        return results;
+    }
 
-        List<List<NormalizedEvent>> results = correlationService.groupByTime(allEvents, seconds);
+    public List<CorrelationResult> correlate(long time, CorrelationType... types)
+            throws IllegalArgumentException, IllegalAccessException {
 
-        for (int i = 0; i < results.size(); i++) {
-            List<NormalizedEvent> group = results.get(i);
-            System.out.println(
-                    "\n===== Correlation Group " + (i + 1) + " =====");
+        List<CorrelationResult> results = new ArrayList<>();
+        for (CorrelationType type : types) {
 
-            for (NormalizedEvent event : group) {
-                System.out.println("  " + event.getSource() + " || " + event.getTimestamp());
+            switch (type) {
+
+                case REQUEST_ID:
+                    results.addAll(viewCorrelationByRequestId());
+                    break;
+
+                case TRACE_ID:
+                    results.addAll(viewCorrelationByTraceId());
+                    break;
+
+                case TIME:
+                    results.addAll(viewCorrelationByTime(time));
+                    break;
+
+                default:
+                    throw new IllegalArgumentException(
+                            "Unsupported correlation type: " + type);
             }
         }
 
         return results;
     }
-
 }
