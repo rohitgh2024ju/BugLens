@@ -31,7 +31,7 @@ public class EventGraph {
             EventNode target = graph.getEdgeTarget(edge);
 
             System.out.println(
-                    source.getId() + " -> " + target.getId());
+                    source.getId() + " -> " + target.getId() + " || " + edge.getEvidenceTypes());
         });
     }
 }

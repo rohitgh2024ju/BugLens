@@ -6,6 +6,7 @@ import dev.rohit.buglens.CorrelationEngine.model.CorrelationResult;
 import dev.rohit.buglens.GraphEngine.model.EventGraph;
 import dev.rohit.buglens.GraphEngine.model.EventNode;
 import dev.rohit.buglens.NormalizerEngine.model.NormalizedEvent;
+import dev.rohit.buglens.GraphEngine.model.EventRelationship;
 
 public class GraphBuilder {
     private final EventGraph eventGraph;
@@ -41,9 +42,20 @@ public class GraphBuilder {
 
                 if (previousNode != null) {
 
-                    eventGraph.getGraph().addEdge(
-                            previousNode,
-                            currentNode);
+                    EventRelationship existingEdge = eventGraph.getGraph().getEdge(previousNode, currentNode);
+
+                    if (existingEdge != null) {
+                        existingEdge.getEvidenceTypes().add(result.getType());
+                    } else {
+
+                        EventRelationship relationship = new EventRelationship();
+                        relationship.getEvidenceTypes().add(result.getType());
+                        
+                        eventGraph.getGraph().addEdge(
+                                previousNode,
+                                currentNode, relationship);
+                    }
+
                 }
 
                 previousNode = currentNode;
