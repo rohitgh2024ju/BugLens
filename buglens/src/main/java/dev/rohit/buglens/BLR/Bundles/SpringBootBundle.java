@@ -4,14 +4,17 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import dev.rohit.buglens.CorrelationEngine.model.CorrelationResult;
 import dev.rohit.buglens.CorrelationEngine.model.CorrelationType;
+import dev.rohit.buglens.GraphEngine.model.EvidenceScore;
 import dev.rohit.buglens.NormalizerEngine.model.NormalizedEvent;
 
 public class SpringBootBundle implements CorrelationBundle {
@@ -26,6 +29,22 @@ public class SpringBootBundle implements CorrelationBundle {
                 CorrelationType.TIME,
                 CorrelationType.SAME_COMPONENT,
                 CorrelationType.SAME_SERVICE);
+    }
+
+    @Override
+    public Map<CorrelationType, EvidenceScore> getEvidenceScores() {
+        Map<CorrelationType, EvidenceScore> scores = new EnumMap<>(CorrelationType.class);
+
+        scores.put(CorrelationType.REQUEST_ID, new EvidenceScore(0.90, 0.95));
+        scores.put(CorrelationType.REQUEST_ID, new EvidenceScore(0.90, 0.95));
+        scores.put(CorrelationType.TRACE_ID, new EvidenceScore(0.95, 0.98));
+        scores.put(CorrelationType.TRANSACTION_ID, new EvidenceScore(0.92, 0.95));
+        scores.put(CorrelationType.THREAD, new EvidenceScore(0.55, 0.70));
+        scores.put(CorrelationType.TIME, new EvidenceScore(0.25, 0.50));
+        scores.put(CorrelationType.SAME_COMPONENT, new EvidenceScore(0.35, 0.60));
+        scores.put(CorrelationType.SAME_SERVICE, new EvidenceScore(0.20, 0.40));
+
+        return scores;
     }
 
     @Override

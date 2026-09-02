@@ -2,6 +2,7 @@ package dev.rohit.buglens.CorrelationEngine;
 
 import java.util.List;
 
+import dev.rohit.buglens.BLR.Bundles.CorrelationBundle;
 import dev.rohit.buglens.CorrelationEngine.model.CorrelationGroup;
 import dev.rohit.buglens.CorrelationEngine.model.CorrelationResult;
 import dev.rohit.buglens.IngestionEngine.context.ProcessingContext;
@@ -14,6 +15,7 @@ public class CorrelationEngine {
         private final ProcessingContext context;
 
         private List<CorrelationResult> results;
+        private CorrelationGroup correlationGroup;
 
         public CorrelationEngine(
                         String clientId,
@@ -27,13 +29,17 @@ public class CorrelationEngine {
                         long time)
                         throws IllegalArgumentException, IllegalAccessException {
 
-                CorrelationGroup correlationGroup = new CorrelationGroup(
+                this.correlationGroup = new CorrelationGroup(
                                 this.clientId,
                                 this.context);
 
                 this.results = correlationGroup.correlateAll(time);
 
                 return this.results;
+        }
+
+        public CorrelationBundle getBundle() {
+                return this.correlationGroup.getBundle();
         }
 
         public void printCorrelation() {

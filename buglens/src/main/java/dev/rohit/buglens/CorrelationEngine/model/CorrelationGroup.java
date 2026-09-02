@@ -44,6 +44,10 @@ public class CorrelationGroup {
         this.bundle = this.correlationService.getBundle();
     }
 
+    public CorrelationBundle getBundle() {
+        return this.bundle;
+    }
+
     public List<CorrelationResult> correlate(
             long time, CorrelationType ...types) {
 
