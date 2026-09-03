@@ -90,12 +90,20 @@ public class GraphBuilder {
                 strengthProduct *= (1 - strengthWeight);
                 confidenceProduct *= (1 - reliabilityWeight * strengthWeight);
 
+                double strengthProductInverse = round(1 - strengthProduct, 4);
+                double confidenceProductInverse = round(1 - confidenceProduct, 4);
+
                 relationship.setStrength(
-                        1 - strengthProduct);
+                        strengthProductInverse);
 
                 relationship.setConfidence(
-                        1 - confidenceProduct);
+                        confidenceProductInverse);
             }
         }
+    }
+
+    private double round(double value, int decimalPlaces) {
+        double factor = Math.pow(10, decimalPlaces);
+        return Math.round(value * factor) / factor;
     }
 }
