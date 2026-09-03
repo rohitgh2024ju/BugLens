@@ -7,6 +7,7 @@ import dev.rohit.buglens.CorrelationEngine.CorrelationEngine;
 import dev.rohit.buglens.CorrelationEngine.model.CorrelationResult;
 import dev.rohit.buglens.GraphEngine.model.EventGraph;
 import dev.rohit.buglens.GraphEngine.service.GraphBuilder;
+import dev.rohit.buglens.GraphEngine.service.GraphPersistenceService;
 import dev.rohit.buglens.IngestionEngine.context.ProcessingContext;
 import dev.rohit.buglens.IngestionEngine.format.FormatDetector;
 import dev.rohit.buglens.IngestionEngine.format.LogFormat;
@@ -36,7 +37,7 @@ public class GraphEngine {
                 CorrelationBundle bundle = correlationEngine.getBundle();
 
                 // Build graph
-                EventGraph eventGraph = new EventGraph();
+                EventGraph eventGraph = new EventGraph("000");
 
                 GraphBuilder graphBuilder = new GraphBuilder(eventGraph);
 
@@ -59,5 +60,8 @@ public class GraphEngine {
                                                                 .size());
 
                 eventGraph.printEdges();
+
+                GraphPersistenceService graphPersistenceService = new GraphPersistenceService("000");
+                graphPersistenceService.save(eventGraph);
         }
 }
