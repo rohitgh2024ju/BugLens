@@ -3,7 +3,9 @@ package dev.rohit.buglens.CorrelationEngine.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import dev.rohit.buglens.BLR.Bundles.CorrelationBundle;
 import dev.rohit.buglens.CorrelationEngine.service.CorrelationService;
+import dev.rohit.buglens.IngestionEngine.context.ProcessingContext;
 import dev.rohit.buglens.NormalizerEngine.model.NormalizedEvent;
 import dev.rohit.buglens.QueryLayer.query.EventQuery;
 import dev.rohit.buglens.QueryLayer.query.QueryCriteria;
@@ -14,10 +16,20 @@ public class CorrelationGroup {
 
     private final List<NormalizedEvent> allEvents;
     private final CorrelationService correlationService;
+    private final CorrelationBundle bundle;
+    private final ProcessingContext context;
+
     private List<CorrelationResult> results;
 
-    public CorrelationGroup(String clientId) throws IllegalArgumentException, IllegalAccessException {
+    public CorrelationGroup(
+            String clientId,
+            ProcessingContext context)
+            throws IllegalArgumentException, IllegalAccessException {
+
+        this.context = context;
+
         EventRepository repository = new EventRepository();
+
         EventQueryService service = new EventQueryService(repository);
 
         EventQuery allQuery = EventQuery.builder()
@@ -26,49 +38,81 @@ public class CorrelationGroup {
                 .build();
 
         this.allEvents = service.execute(clientId, allQuery);
-        this.correlationService = new CorrelationService();
+
+        this.correlationService = new CorrelationService(this.context);
+
+        this.bundle = this.correlationService.getBundle();
     }
 
-    public List<CorrelationResult> viewCorrelationByRequestId() {
-        return this.correlationService.groupByRequestId(allEvents);
+    public CorrelationBundle getBundle() {
+        return this.bundle;
     }
 
-    public List<CorrelationResult> viewCorrelationByTraceId() {
-        return this.correlationService.groupByTraceId(allEvents);
-    }
+    public List<CorrelationResult> correlate(
+            long time, CorrelationType ...types) {
 
-    public List<CorrelationResult> viewCorrelationByTime(long seconds) {
-        return this.correlationService.groupByTime(allEvents, seconds);
-    }
-
-    public List<CorrelationResult> viewCorrelationByThread() {
-        return this.correlationService.groupByThread(allEvents);
-    }
-
-    public List<CorrelationResult> correlate(long time, CorrelationType... types) {
         this.results = new ArrayList<>();
 
         for (CorrelationType type : types) {
+
             switch (type) {
+
                 case REQUEST_ID:
-                    this.results.addAll(viewCorrelationByRequestId());
+                    this.results.addAll(
+                            this.bundle.groupByRequestId(allEvents));
                     break;
 
                 case TRACE_ID:
-                    this.results.addAll(viewCorrelationByTraceId());
+                    this.results.addAll(
+                            this.bundle.groupByTraceId(allEvents));
                     break;
 
                 case TIME:
-                    this.results.addAll(viewCorrelationByTime(time));
+                    this.results.addAll(
+                            this.bundle.groupByTime(
+                                    allEvents,
+                                    time));
                     break;
 
                 case THREAD:
-                    this.results.addAll(viewCorrelationByThread());
+                    this.results.addAll(
+                            this.bundle.groupByThread(allEvents));
+                    break;
+
+                case TRANSACTION_ID:
+                    this.results.addAll(
+                            this.bundle.groupByTransactionId(allEvents));
+                    break;
+
+                case SAME_COMPONENT:
+                    this.results.addAll(
+                            this.bundle.groupByComponent(allEvents));
+                    break;
+
+                case SAME_SERVICE:
+                    this.results.addAll(
+                            this.bundle.groupByService(allEvents));
                     break;
 
                 default:
-                    throw new IllegalArgumentException("Unsupported correlation type: " + type);
+                    throw new IllegalArgumentException(
+                            "Unsupported correlation type: " + type);
             }
+        }
+
+        return this.results;
+    }
+
+    public List<CorrelationResult> correlateAll(long time) {
+        this.results = new ArrayList<>();
+
+        for (CorrelationType type : this.bundle.getSupportedCorrelationTypes()) {
+
+            this.results.addAll(
+                    this.bundle.correlate(
+                            this.allEvents,
+                            type,
+                            time));
         }
 
         return this.results;

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import dev.rohit.buglens.IngestionEngine.format.FormatDetector;
+import dev.rohit.buglens.IngestionEngine.format.LogFormat;
 import dev.rohit.buglens.NormalizerEngine.model.NormalizedEvent;
 import dev.rohit.buglens.QueryLayer.config.NitriteMultiTenantConfig;
 import dev.rohit.buglens.QueryLayer.repository.EventRepository;
@@ -15,9 +16,9 @@ public class NormalizerEngine {
     public void runEngine() {
         try {
             FormatDetector formatDetector = new FormatDetector();
-            String parserClass = formatDetector.detect();
+            LogFormat format = formatDetector.detect();
 
-            Normalizer normalizer = new Normalizer(parserClass, "buglens/logs/output.jsonl");
+            Normalizer normalizer = new Normalizer(format.getParser(), "buglens/logs/output.jsonl");
             List<NormalizedEvent> eventList = normalizer.normalize();
 
             ObjectMapper mapper = new ObjectMapper();

@@ -1,12 +1,16 @@
 package dev.rohit.buglens.GraphEngine.service;
 
 import java.util.List;
+import java.util.Map;
 
+import dev.rohit.buglens.BLR.Bundles.CorrelationBundle;
 import dev.rohit.buglens.CorrelationEngine.model.CorrelationResult;
+import dev.rohit.buglens.CorrelationEngine.model.CorrelationType;
 import dev.rohit.buglens.GraphEngine.model.EventGraph;
 import dev.rohit.buglens.GraphEngine.model.EventNode;
 import dev.rohit.buglens.NormalizerEngine.model.NormalizedEvent;
 import dev.rohit.buglens.GraphEngine.model.EventRelationship;
+import dev.rohit.buglens.GraphEngine.model.EvidenceScore;
 
 public class GraphBuilder {
     private final EventGraph eventGraph;
@@ -15,7 +19,7 @@ public class GraphBuilder {
         this.eventGraph = eventGraph;
     }
 
-    public void build(List<CorrelationResult> correlationResults) {
+    public void build(List<CorrelationResult> correlationResults, CorrelationBundle bundle) {
 
         if (correlationResults == null || correlationResults.isEmpty()) {
             return;
@@ -50,7 +54,7 @@ public class GraphBuilder {
 
                         EventRelationship relationship = new EventRelationship();
                         relationship.getEvidenceTypes().add(result.getType());
-                        
+
                         eventGraph.getGraph().addEdge(
                                 previousNode,
                                 currentNode, relationship);
@@ -60,6 +64,46 @@ public class GraphBuilder {
 
                 previousNode = currentNode;
             }
+
+            calculationRelationshipScores(bundle);
         }
+    }
+
+    private void calculationRelationshipScores(CorrelationBundle bundle) {
+        Map<CorrelationType, EvidenceScore> evidenceScores = bundle.getEvidenceScores();
+
+        for (EventRelationship relationship : eventGraph.getGraph().edgeSet()) {
+            double strengthProduct = 1.0;
+            double confidenceProduct = 1.0;
+
+            for (CorrelationType type : relationship.getEvidenceTypes()) {
+                EvidenceScore score = evidenceScores.get(type);
+
+                if (score == null) {
+                    continue;
+                }
+
+                double strengthWeight = score.getStrengthWeight();
+
+                double reliabilityWeight = score.getReliabilityWeight();
+
+                strengthProduct *= (1 - strengthWeight);
+                confidenceProduct *= (1 - reliabilityWeight * strengthWeight);
+
+                double strengthProductInverse = round(1 - strengthProduct, 4);
+                double confidenceProductInverse = round(1 - confidenceProduct, 4);
+
+                relationship.setStrength(
+                        strengthProductInverse);
+
+                relationship.setConfidence(
+                        confidenceProductInverse);
+            }
+        }
+    }
+
+    private double round(double value, int decimalPlaces) {
+        double factor = Math.pow(10, decimalPlaces);
+        return Math.round(value * factor) / factor;
     }
 }

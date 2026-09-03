@@ -1,16 +1,18 @@
 package dev.rohit.buglens.IngestionEngine.context;
 
+import dev.rohit.buglens.IngestionEngine.format.LogFormat;
 
 public class ProcessingContext {
-    private String logFormat;
+    private LogFormat logFormat;
 
-    public ProcessingContext() {}
+    public ProcessingContext() {
+    }
 
-    public String getLogFormat() {
+    public LogFormat getLogFormat() {
         return logFormat;
     }
 
-    public void setLogFormat(String format) {
+    public void setLogFormat(LogFormat format) {
         this.logFormat = format;
     }
 }

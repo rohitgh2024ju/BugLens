@@ -2,38 +2,66 @@ package dev.rohit.buglens.GraphEngine;
 
 import java.util.List;
 
+import dev.rohit.buglens.BLR.Bundles.CorrelationBundle;
 import dev.rohit.buglens.CorrelationEngine.CorrelationEngine;
 import dev.rohit.buglens.CorrelationEngine.model.CorrelationResult;
-import dev.rohit.buglens.CorrelationEngine.model.CorrelationType;
 import dev.rohit.buglens.GraphEngine.model.EventGraph;
 import dev.rohit.buglens.GraphEngine.service.GraphBuilder;
+import dev.rohit.buglens.GraphEngine.service.GraphPersistenceService;
+import dev.rohit.buglens.IngestionEngine.context.ProcessingContext;
+import dev.rohit.buglens.IngestionEngine.format.FormatDetector;
+import dev.rohit.buglens.IngestionEngine.format.LogFormat;
 
 public class GraphEngine {
 
-    public static void main(String[] args)
-            throws Exception {
+        public static void main(String[] args) throws Exception {
 
-        CorrelationEngine correlationEngine = new CorrelationEngine("000");
+                // Detect log format
+                FormatDetector formatDetector = new FormatDetector();
 
-        List<CorrelationResult> results = correlationEngine.runCorrelate(
-                1,
-                CorrelationType.REQUEST_ID,
-                CorrelationType.TIME);
+                LogFormat format = formatDetector.detect();
 
-        EventGraph eventGraph = new EventGraph();
+                // Create processing context
+                ProcessingContext processingContext = new ProcessingContext();
 
-        GraphBuilder graphBuilder = new GraphBuilder(eventGraph);
+                processingContext.setLogFormat(format);
 
-        graphBuilder.build(results);
+                // Run correlation
+                CorrelationEngine correlationEngine = new CorrelationEngine(
+                                "000",
+                                processingContext);
 
-        // eventGraph.printVertices();
-        System.out.println("--------------------------------");
-        System.out.println("Vertices: "
-                + eventGraph.getGraph().vertexSet().size());
+                List<CorrelationResult> results = correlationEngine.runCorrelate(1);
 
-        System.out.println("Edges: "
-                + eventGraph.getGraph().edgeSet().size());
+                // Get the bundle used for correlation
+                CorrelationBundle bundle = correlationEngine.getBundle();
 
-        eventGraph.printEdges();
-    }
+                // Build graph
+                EventGraph eventGraph = new EventGraph("000");
+
+                GraphBuilder graphBuilder = new GraphBuilder(eventGraph);
+
+                graphBuilder.build(
+                                results,
+                                bundle);
+
+                System.out.println("--------------------------------");
+
+                System.out.println(
+                                "Vertices: "
+                                                + eventGraph.getGraph()
+                                                                .vertexSet()
+                                                                .size());
+
+                System.out.println(
+                                "Edges: "
+                                                + eventGraph.getGraph()
+                                                                .edgeSet()
+                                                                .size());
+
+                eventGraph.printEdges();
+
+                GraphPersistenceService graphPersistenceService = new GraphPersistenceService("000");
+                graphPersistenceService.save(eventGraph);
+        }
 }

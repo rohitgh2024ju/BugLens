@@ -14,10 +14,9 @@ public class FormatDetector {
 
         private List<LogFormat> formatList;
 
-        public String detect() {
+        public LogFormat detect() {
 
                 try {
-
                         // Initialize LogReader and LogFormatter
                         LogReader logReader = new LogReader(
                                         "buglens/logs/output.jsonl");
@@ -57,7 +56,7 @@ public class FormatDetector {
 
                         // No matching formats
                         if (this.formatList.isEmpty()) {
-                                return "Unknown";
+                                return null;
                         }
 
                         // Sort by confidence, highest first
@@ -73,13 +72,13 @@ public class FormatDetector {
                                         "Top Match: "
                                                         + bestFormat.getParser());
 
-                        return bestFormat.getParser();
+                        return bestFormat;
 
                 } catch (Exception e) {
 
                         e.printStackTrace();
 
-                        return "Unknown";
+                        return null;
                 }
         }
 

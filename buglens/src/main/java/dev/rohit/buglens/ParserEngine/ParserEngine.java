@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import dev.rohit.buglens.IngestionEngine.Reader.LogReader;
 import dev.rohit.buglens.IngestionEngine.format.FormatDetector;
+import dev.rohit.buglens.IngestionEngine.format.LogFormat;
 
 // coordinates everything
 public class ParserEngine {
@@ -40,12 +41,12 @@ public class ParserEngine {
 
         try {
             FormatDetector formatDetector = new FormatDetector();
-            String parserClass = formatDetector.detect();
-            System.out.println(parserClass);
+            LogFormat format = formatDetector.detect();
+            System.out.println(format.getParser());
 
             ParserEngine parserEngine = new ParserEngine(
                     "buglens/logs/output.jsonl",
-                    parserClass);
+                    format.getParser());
 
             JSONArray parsedData = parserEngine.runParser();
             System.out.println(parsedData.toString(2));

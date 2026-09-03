@@ -4,10 +4,19 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
 public class EventGraph {
+
+    private final String clientId;
     private final Graph<EventNode, EventRelationship> graph;
 
-    public EventGraph() {
-        this.graph = new DefaultDirectedGraph<>(EventRelationship.class);
+    public EventGraph(String clientId) {
+
+        this.clientId = clientId;
+        this.graph = new DefaultDirectedGraph<>(
+                EventRelationship.class);
+    }
+
+    public String getClientId() {
+        return clientId;
     }
 
     public Graph<EventNode, EventRelationship> getGraph() {
@@ -15,11 +24,14 @@ public class EventGraph {
     }
 
     public void printVertices() {
+
         graph.vertexSet().forEach(node -> {
+
             System.out.println(
-                    node.getId() + " || " +
-                            node.getEvent().getTimestamp() + " || " +
-                            node.getEvent().getSource());
+                    node.getId() + " || "
+                            + node.getEvent().getTimestamp()
+                            + " || "
+                            + node.getEvent().getSource());
         });
     }
 
@@ -28,10 +40,19 @@ public class EventGraph {
         graph.edgeSet().forEach(edge -> {
 
             EventNode source = graph.getEdgeSource(edge);
+
             EventNode target = graph.getEdgeTarget(edge);
 
             System.out.println(
-                    source.getId() + " -> " + target.getId() + " || " + edge.getEvidenceTypes());
+                    source.getId()
+                            + " -> "
+                            + target.getId()
+                            + " || "
+                            + edge.getEvidenceTypes()
+                            + " || strength : "
+                            + edge.getStrength()
+                            + " || confidence : "
+                            + edge.getConfidence());
         });
     }
 }
