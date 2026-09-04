@@ -4,6 +4,7 @@ import java.util.List;
 
 import dev.rohit.buglens.BLR.Bundles.CorrelationBundle;
 import dev.rohit.buglens.CorrelationEngine.model.CorrelationGroup;
+import dev.rohit.buglens.NormalizerEngine.model.NormalizedEvent;
 import dev.rohit.buglens.CorrelationEngine.model.CorrelationResult;
 import dev.rohit.buglens.IngestionEngine.context.ProcessingContext;
 import dev.rohit.buglens.IngestionEngine.format.FormatDetector;
@@ -36,6 +37,10 @@ public class CorrelationEngine {
                 this.results = correlationGroup.correlateAll(time);
 
                 return this.results;
+        }
+
+        public List<NormalizedEvent> getEvents() {
+                return this.correlationGroup.getEvents();
         }
 
         public CorrelationBundle getBundle() {

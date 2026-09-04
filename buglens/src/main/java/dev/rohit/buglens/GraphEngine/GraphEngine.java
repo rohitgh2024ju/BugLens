@@ -11,6 +11,7 @@ import dev.rohit.buglens.GraphEngine.service.GraphPersistenceService;
 import dev.rohit.buglens.IngestionEngine.context.ProcessingContext;
 import dev.rohit.buglens.IngestionEngine.format.FormatDetector;
 import dev.rohit.buglens.IngestionEngine.format.LogFormat;
+import dev.rohit.buglens.NormalizerEngine.model.NormalizedEvent;
 
 public class GraphEngine {
 
@@ -32,6 +33,7 @@ public class GraphEngine {
                                 processingContext);
 
                 List<CorrelationResult> results = correlationEngine.runCorrelate(1);
+                List<NormalizedEvent> allEvents = correlationEngine.getEvents();
 
                 // Get the bundle used for correlation
                 CorrelationBundle bundle = correlationEngine.getBundle();
@@ -42,6 +44,7 @@ public class GraphEngine {
                 GraphBuilder graphBuilder = new GraphBuilder(eventGraph);
 
                 graphBuilder.build(
+                                allEvents,
                                 results,
                                 bundle);
 
@@ -60,8 +63,9 @@ public class GraphEngine {
                                                                 .size());
 
                 eventGraph.printEdges();
+                eventGraph.printVertices();
 
-                GraphPersistenceService graphPersistenceService = new GraphPersistenceService("000");
-                graphPersistenceService.save(eventGraph);
+                // GraphPersistenceService graphPersistenceService = new GraphPersistenceService("000");
+                // graphPersistenceService.save(eventGraph);
         }
 }

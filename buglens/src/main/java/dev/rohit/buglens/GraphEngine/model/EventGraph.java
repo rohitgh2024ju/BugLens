@@ -25,7 +25,7 @@ public class EventGraph {
 
     public void printVertices() {
 
-        graph.vertexSet().forEach(node -> {
+        this.graph.vertexSet().forEach(node -> {
 
             System.out.println(
                     node.getId() + " || "
@@ -37,7 +37,7 @@ public class EventGraph {
 
     public void printEdges() {
 
-        graph.edgeSet().forEach(edge -> {
+        this.graph.edgeSet().forEach(edge -> {
 
             EventNode source = graph.getEdgeSource(edge);
 
