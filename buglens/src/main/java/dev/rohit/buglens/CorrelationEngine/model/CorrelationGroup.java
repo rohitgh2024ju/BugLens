@@ -48,8 +48,12 @@ public class CorrelationGroup {
         return this.bundle;
     }
 
+    public List<NormalizedEvent> getEvents() {
+        return this.allEvents;
+    }
+
     public List<CorrelationResult> correlate(
-            long time, CorrelationType ...types) {
+            long time, CorrelationType... types) {
 
         this.results = new ArrayList<>();
 

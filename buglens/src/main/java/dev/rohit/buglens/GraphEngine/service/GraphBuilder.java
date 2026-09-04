@@ -1,5 +1,6 @@
 package dev.rohit.buglens.GraphEngine.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,13 +20,42 @@ public class GraphBuilder {
         this.eventGraph = eventGraph;
     }
 
-    public void build(List<CorrelationResult> correlationResults, CorrelationBundle bundle) {
+    public void build(
+            List<NormalizedEvent> allEvents,
+            List<CorrelationResult> correlationResults,
+            CorrelationBundle bundle) {
 
+        if (allEvents == null || allEvents.isEmpty()) {
+            return;
+        }
+
+        // Create all event nodes first
+        Map<String, EventNode> nodeMap = new HashMap<>();
+
+        for (NormalizedEvent event : allEvents) {
+
+            if (event == null || event.getId() == null) {
+                continue;
+            }
+
+            EventNode node = EventNode.builder()
+                    .id(event.getId().toString())
+                    .event(event)
+                    .build();
+
+            eventGraph.getGraph().addVertex(node);
+
+            nodeMap.put(node.getId(), node);
+        }
         if (correlationResults == null || correlationResults.isEmpty()) {
             return;
         }
 
         for (CorrelationResult result : correlationResults) {
+
+            if (result == null) {
+                continue;
+            }
 
             List<NormalizedEvent> events = result.getEvents();
 
@@ -37,36 +67,43 @@ public class GraphBuilder {
 
             for (NormalizedEvent event : events) {
 
-                EventNode currentNode = EventNode.builder()
-                        .id(event.getId().toString())
-                        .event(event)
-                        .build();
+                if (event == null || event.getId() == null) {
+                    continue;
+                }
 
-                eventGraph.getGraph().addVertex(currentNode);
+                EventNode currentNode = nodeMap.get(event.getId().toString());
+
+                if (currentNode == null) {
+                    continue;
+                }
 
                 if (previousNode != null) {
 
-                    EventRelationship existingEdge = eventGraph.getGraph().getEdge(previousNode, currentNode);
+                    EventRelationship existingEdge = eventGraph.getGraph()
+                            .getEdge(previousNode, currentNode);
 
                     if (existingEdge != null) {
-                        existingEdge.getEvidenceTypes().add(result.getType());
-                    } else {
 
+                        existingEdge.getEvidenceTypes()
+                                .add(result.getType());
+
+                    } else {
                         EventRelationship relationship = new EventRelationship();
-                        relationship.getEvidenceTypes().add(result.getType());
+
+                        relationship.getEvidenceTypes()
+                                .add(result.getType());
 
                         eventGraph.getGraph().addEdge(
                                 previousNode,
-                                currentNode, relationship);
+                                currentNode,
+                                relationship);
                     }
-
                 }
 
                 previousNode = currentNode;
             }
-
-            calculationRelationshipScores(bundle);
         }
+        calculationRelationshipScores(bundle);
     }
 
     private void calculationRelationshipScores(CorrelationBundle bundle) {
