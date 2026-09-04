@@ -24,12 +24,9 @@ public class FailureIncidentDetector {
             "unavailable",
             "denied");
 
-    private String clientId;
     private List<NormalizedEvent> allEvents;
 
     public FailureIncidentDetector(String clientId) throws IllegalArgumentException, IllegalAccessException {
-        this.clientId = clientId;
-
         EventRepository repository = new EventRepository();
         EventQueryService service = new EventQueryService(repository);
 
