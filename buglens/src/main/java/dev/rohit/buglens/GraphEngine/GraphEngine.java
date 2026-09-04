@@ -65,7 +65,7 @@ public class GraphEngine {
                 eventGraph.printEdges();
                 eventGraph.printVertices();
 
-                // GraphPersistenceService graphPersistenceService = new GraphPersistenceService("000");
-                // graphPersistenceService.save(eventGraph);
+                GraphPersistenceService graphPersistenceService = new GraphPersistenceService("000");
+                graphPersistenceService.save(eventGraph);
         }
 }
