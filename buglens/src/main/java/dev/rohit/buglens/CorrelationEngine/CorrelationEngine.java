@@ -66,7 +66,7 @@ public class CorrelationEngine {
                         throws IllegalArgumentException, IllegalAccessException {
 
                 FormatDetector formatDetector = new FormatDetector();
-                LogFormat format = formatDetector.detect();
+                LogFormat format = formatDetector.detect("000");
 
                 ProcessingContext processingContext = new ProcessingContext();
                 processingContext.setLogFormat(format);

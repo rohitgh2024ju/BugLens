@@ -7,7 +7,7 @@ import dev.rohit.buglens.IngestionEngine.format.LogFormat;
 public class IngestionEngine {
     public static void main(String[] args) {
         FormatDetector formatDetector = new FormatDetector();
-        LogFormat format = formatDetector.detect();
+        LogFormat format = formatDetector.detect("000");
 
         ProcessingContext processingContext = new ProcessingContext();
         processingContext.setLogFormat(format);

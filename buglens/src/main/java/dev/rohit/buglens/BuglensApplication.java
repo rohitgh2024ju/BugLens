@@ -22,17 +22,17 @@ public class BuglensApplication {
 		return args -> {
 			// Define your input and output file paths
 			Path inputPath = Paths.get("buglens/src/test.log");
-			Path outputPath = Paths.get("buglens/logs/output.jsonl");
+			Path outputDirectory = Paths.get("buglens/logs/");
 
-			if (outputPath.getParent() != null) {
-				Files.createDirectories(outputPath.getParent());
+			if (outputDirectory.getParent() != null) {
+				Files.createDirectories(outputDirectory.getParent());
 			}
 
 			// Execute the collector engine
-			CollectorEngine engine = new CollectorEngine(inputPath, outputPath);
+			CollectorEngine engine = new CollectorEngine(inputPath, outputDirectory, "000");
 			engine.collectJson();
 
-			System.out.println("Log ingestion complete: " + outputPath.toAbsolutePath());
+			System.out.println("Log ingestion complete: " + outputDirectory.toAbsolutePath());
 		};
 	}
 }

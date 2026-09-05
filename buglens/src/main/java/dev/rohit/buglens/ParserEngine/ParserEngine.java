@@ -1,58 +1,68 @@
 package dev.rohit.buglens.ParserEngine;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import dev.rohit.buglens.IngestionEngine.Reader.LogReader;
-import dev.rohit.buglens.IngestionEngine.format.FormatDetector;
-import dev.rohit.buglens.IngestionEngine.format.LogFormat;
 
-// coordinates everything
 public class ParserEngine {
-    private final String inputPath;
+
+    private final Path inputPath;
+
     private final LogParser logParser;
 
-    public ParserEngine(String inputPath, String parserClass) {
+    public ParserEngine(
+            Path inputPath,
+            String parserClass) {
+
+        if (inputPath == null) {
+            throw new IllegalArgumentException(
+                    "Input path is required");
+        }
+
+        if (parserClass == null
+                || parserClass.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Parser class is required");
+        }
+
         this.inputPath = inputPath;
-        this.logParser = new ParserRegistry(parserClass).find();
+
+        this.logParser =
+                new ParserRegistry(parserClass)
+                        .find();
     }
+    public JSONArray runParser()
+            throws JSONException, IOException {
 
-    public JSONArray runParser() throws JSONException, IOException {
+        LogReader logReader =
+                new LogReader(inputPath);
 
-        LogReader logReader = new LogReader(inputPath);
-        JSONObject logData = logReader.readFile(-1);
-        JSONArray logArray = logData.getJSONArray("logs");
+        JSONObject logData =
+                logReader.readFile(-1);
 
-        JSONArray parsedLogs = new JSONArray();
+        JSONArray logArray =
+                logData.getJSONArray("logs");
+
+        JSONArray parsedLogs =
+                new JSONArray();
 
         for (Object logObj : logArray) {
-            String logStr = logObj.toString();
-            JSONObject parsedData = logParser.parse(logStr);
+
+            String logStr =
+                    logObj.toString();
+
+            JSONObject parsedData =
+                    logParser.parse(logStr);
+
             parsedLogs.put(parsedData);
         }
 
         return parsedLogs;
-    }
-
-    public static void main(String[] args) {
-
-        try {
-            FormatDetector formatDetector = new FormatDetector();
-            LogFormat format = formatDetector.detect();
-            System.out.println(format.getParser());
-
-            ParserEngine parserEngine = new ParserEngine(
-                    "buglens/logs/output.jsonl",
-                    format.getParser());
-
-            JSONArray parsedData = parserEngine.runParser();
-            System.out.println(parsedData.toString(2));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

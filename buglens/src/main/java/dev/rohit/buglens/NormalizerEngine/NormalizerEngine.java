@@ -1,5 +1,7 @@
 package dev.rohit.buglens.NormalizerEngine;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,12 +15,21 @@ import dev.rohit.buglens.QueryLayer.repository.EventRepository;
 
 public class NormalizerEngine {
 
-    public void runEngine() {
+    public void runEngine(String clientId) {
         try {
-            FormatDetector formatDetector = new FormatDetector();
-            LogFormat format = formatDetector.detect();
+            FormatDetector formatDetector =
+                    new FormatDetector();
 
-            Normalizer normalizer = new Normalizer(format.getParser(), "buglens/logs/output.jsonl");
+            LogFormat format =
+                    formatDetector.detect(clientId);
+
+            Path inputPath =
+                    Paths.get(
+                            "buglens",
+                            "logs",
+                            "output-" + clientId + ".jsonl");
+
+            Normalizer normalizer = new Normalizer(format.getParser(), inputPath);
             List<NormalizedEvent> eventList = normalizer.normalize();
 
             ObjectMapper mapper = new ObjectMapper();
@@ -27,13 +38,13 @@ public class NormalizerEngine {
             // mapper.writeValue(outputFile, eventList);
 
             EventRepository eventRepository = new EventRepository();
-            eventRepository.saveAll("000", eventList);
+            eventRepository.saveAll(clientId, eventList);
 
             System.out.println(" Successfully saved " + eventList.size() + " events.");
 
             System.out.println("Checking immediately:");
 
-            eventRepository.viewAll("000");
+            eventRepository.viewAll(clientId);
 
             NitriteMultiTenantConfig.closeAll();
 
@@ -46,6 +57,6 @@ public class NormalizerEngine {
     public static void main(String[] args) {
         NormalizerEngine normalizerEngine = new NormalizerEngine();
 
-        normalizerEngine.runEngine();
+        normalizerEngine.runEngine("000");
     }
 }

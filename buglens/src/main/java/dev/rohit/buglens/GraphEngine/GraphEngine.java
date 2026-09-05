@@ -20,7 +20,7 @@ public class GraphEngine {
                 // Detect log format
                 FormatDetector formatDetector = new FormatDetector();
 
-                LogFormat format = formatDetector.detect();
+                LogFormat format = formatDetector.detect("000");
 
                 // Create processing context
                 ProcessingContext processingContext = new ProcessingContext();

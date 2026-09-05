@@ -1,5 +1,7 @@
 package dev.rohit.buglens.IngestionEngine.format;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,12 +16,15 @@ public class FormatDetector {
 
         private List<LogFormat> formatList;
 
-        public LogFormat detect() {
+        public LogFormat detect(String clientId) {
 
                 try {
+                        Path outputDirectory = Paths.get("buglens/logs");
+                        Path outputPath = outputDirectory.resolve("output-" + clientId + ".jsonl");
+                
                         // Initialize LogReader and LogFormatter
                         LogReader logReader = new LogReader(
-                                        "buglens/logs/output.jsonl");
+                                        outputPath);
 
                         LogFormatter formatter = new LogFormatter();
 
