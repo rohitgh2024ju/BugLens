@@ -13,8 +13,10 @@ import dev.rohit.buglens.GraphEngine.model.EventGraph;
 import dev.rohit.buglens.GraphEngine.service.GraphBuilder;
 import dev.rohit.buglens.IncidentEngine.detector.FailureIncidentDetector;
 import dev.rohit.buglens.IncidentEngine.model.FailureContext;
+import dev.rohit.buglens.IncidentEngine.model.Incident;
 import dev.rohit.buglens.IncidentEngine.service.FailureContextService;
 import dev.rohit.buglens.IncidentEngine.service.IncidentService;
+import dev.rohit.buglens.IncidentGroupingEngine.service.IncidentGroupingService;
 import dev.rohit.buglens.IngestionEngine.context.ProcessingContext;
 import dev.rohit.buglens.IngestionEngine.format.FormatDetector;
 import dev.rohit.buglens.IngestionEngine.format.LogFormat;
@@ -195,7 +197,7 @@ public void run(
         IncidentService incidentService =
                 new IncidentService();
 
-        incidentService.buildIncidents(
+        List<Incident>incidents = incidentService.buildIncidents(
                 contexts);
 
 
@@ -205,7 +207,12 @@ public void run(
          * --------------------------------------------------
          */
 
-        incidentService.viewAllIncidents();
+        // incidentService.viewAllIncidents();
+
+        IncidentGroupingService incidentGroupingService = new IncidentGroupingService();
+        incidentGroupingService.buildGroups(incidents);
+
+        incidentGroupingService.viewAllGroups();
 
     } finally {
 
@@ -228,7 +235,7 @@ public static void main(String[] args)
             new InitBugLens();
 
     initBugLens.run(
-            "002",
+            "003",
             Paths.get("buglens/src/test.log"),
             1,
             0.80);
