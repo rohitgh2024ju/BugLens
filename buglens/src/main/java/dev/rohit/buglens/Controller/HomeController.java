@@ -22,11 +22,10 @@ public class HomeController {
             @CookieValue(value = "buglens-client-id", required = false) String clientId,
             HttpServletResponse response) throws IOException {
 
-        new DirectoryInitializer();
         DirectoryInitializer.initialize();
 
         if (clientId == null) {
-            clientId = UUID.randomUUID().toString().substring(0, 7);
+            clientId = "client-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
 
             Cookie cookie = new Cookie("buglens-client-id", clientId);
 

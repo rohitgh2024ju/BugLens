@@ -8,6 +8,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.dizitart.no2.common.mapper.JacksonMapperModule;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -59,6 +61,15 @@ public class NitriteMultiTenantConfig {
                 .openOrCreate();
     }
 
+    public static Path getDatabasePath(String clientId) {
+        if (clientId == null || clientId.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Client ID cannot be null or empty");
+        }
+
+        return Path.of(BASE_DB_DIR, clientId + "-db.db");
+    }
+
     public static void closeAll() {
         dbRegistry.forEach((clientId, db) -> {
             if (db != null && !db.isClosed()) {
@@ -79,5 +90,19 @@ public class NitriteMultiTenantConfig {
             }
             return null;
         });
+    }
+
+    public static void deleteClientDatabase(String clientId) {
+        closeClient(clientId);
+        Path databasePath = getDatabasePath(clientId);
+
+        try {
+            Files.deleteIfExists(databasePath);
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    "Failed to delete client database: "
+                            + clientId,
+                    e);
+        }
     }
 }
