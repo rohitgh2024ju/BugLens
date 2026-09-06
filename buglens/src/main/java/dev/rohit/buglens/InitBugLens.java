@@ -23,12 +23,14 @@ import dev.rohit.buglens.NormalizerEngine.model.NormalizedEvent;
 import dev.rohit.buglens.QueryLayer.config.NitriteMultiTenantConfig;
 import dev.rohit.buglens.QueryLayer.repository.EventRepository;
 
-public class RunBugLens {
+public class InitBugLens {
+public void run(
+        String clientId,
+        long seconds,
+        double threshold)
+        throws IOException, IllegalArgumentException, IllegalAccessException {
 
-    public static void main(String[] args)
-            throws IOException, IllegalArgumentException, IllegalAccessException {
-
-        String clientId = "002";
+    try {
 
         /*
          * --------------------------------------------------
@@ -57,6 +59,7 @@ public class RunBugLens {
                 "Log ingestion complete: "
                         + outputPath.toAbsolutePath());
 
+
         /*
          * --------------------------------------------------
          * 2. DETECT LOG FORMAT
@@ -74,6 +77,7 @@ public class RunBugLens {
 
         processingContext.setLogFormat(format);
 
+
         /*
          * --------------------------------------------------
          * 3. NORMALIZE EVENTS
@@ -87,6 +91,7 @@ public class RunBugLens {
 
         List<NormalizedEvent> eventList =
                 normalizer.normalize();
+
 
         /*
          * --------------------------------------------------
@@ -108,7 +113,6 @@ public class RunBugLens {
                         + eventList.size()
                         + " events.");
 
-        NitriteMultiTenantConfig.closeAll();
 
         /*
          * --------------------------------------------------
@@ -122,13 +126,14 @@ public class RunBugLens {
                         processingContext);
 
         List<CorrelationResult> results =
-                correlationEngine.runCorrelate(1);
+                correlationEngine.runCorrelate(seconds);
 
         List<NormalizedEvent> allEvents =
                 correlationEngine.getEvents();
 
         CorrelationBundle bundle =
                 correlationEngine.getBundle();
+
 
         /*
          * --------------------------------------------------
@@ -146,6 +151,7 @@ public class RunBugLens {
                 allEvents,
                 results,
                 bundle);
+
 
         /*
          * --------------------------------------------------
@@ -165,6 +171,7 @@ public class RunBugLens {
                         .detectFailureEvent(
                                 failureIds);
 
+
         /*
          * --------------------------------------------------
          * 8. BUILD FAILURE CONTEXTS
@@ -178,7 +185,8 @@ public class RunBugLens {
                 failureContextService.buildAll(
                         eventGraph,
                         failureEvents,
-                        0.80);
+                        threshold);
+
 
         /*
          * --------------------------------------------------
@@ -192,6 +200,7 @@ public class RunBugLens {
         incidentService.buildIncidents(
                 contexts);
 
+
         /*
          * --------------------------------------------------
          * 10. DISPLAY INCIDENTS
@@ -199,5 +208,30 @@ public class RunBugLens {
          */
 
         incidentService.viewAllIncidents();
+
+    } finally {
+
+        /*
+         * --------------------------------------------------
+         * CLEANUP CLIENT RESOURCES
+         * --------------------------------------------------
+         */
+
+        NitriteMultiTenantConfig.closeClient(clientId);
     }
+}
+
+public static void main(String[] args)
+        throws IOException,
+        IllegalArgumentException,
+        IllegalAccessException {
+
+    InitBugLens initBugLens =
+            new InitBugLens();
+
+    initBugLens.run(
+            "002",
+            1,
+            0.80);
+}
 }
