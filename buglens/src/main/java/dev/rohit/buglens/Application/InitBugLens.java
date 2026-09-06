@@ -1,4 +1,4 @@
-package dev.rohit.buglens;
+package dev.rohit.buglens.Application;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -26,6 +26,7 @@ import dev.rohit.buglens.QueryLayer.repository.EventRepository;
 public class InitBugLens {
 public void run(
         String clientId,
+        Path inputPath,
         long seconds,
         double threshold)
         throws IOException, IllegalArgumentException, IllegalAccessException {
@@ -37,9 +38,6 @@ public void run(
          * 1. COLLECT RAW LOG DATA
          * --------------------------------------------------
          */
-
-        Path inputPath =
-                Paths.get("buglens/src/test.log");
 
         Path outputDirectory =
                 Paths.get("buglens/logs");
@@ -231,6 +229,7 @@ public static void main(String[] args)
 
     initBugLens.run(
             "002",
+            Paths.get("buglens/src/test.log"),
             1,
             0.80);
 }
