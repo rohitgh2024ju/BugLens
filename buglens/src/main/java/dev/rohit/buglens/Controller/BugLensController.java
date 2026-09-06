@@ -15,58 +15,53 @@ import org.springframework.web.multipart.MultipartFile;
 
 import dev.rohit.buglens.Application.InitBugLens;
 
-
 @RestController
 @RequestMapping("/api/buglens")
 public class BugLensController {
 
-    private final InitBugLens initBugLens;
+        private final InitBugLens initBugLens;
 
-    public BugLensController() {
-        this.initBugLens = new InitBugLens();
-    }
+        public BugLensController() {
+                this.initBugLens = new InitBugLens();
+        }
 
-    @PostMapping("/analyze")
-    public ResponseEntity<?> analyze(
-            @RequestParam("file") MultipartFile file,
-            @CookieValue("buglens-client-id") String clientId)
-            throws Exception {
+        @PostMapping("/analyze")
+        public ResponseEntity<?> analyze(
+                        @RequestParam("file") MultipartFile file,
+                        @CookieValue("buglens-client-id") String clientId)
+                        throws Exception {
 
-        Path uploadedFile = saveFile(file);
+                Path uploadedFile = saveFile(file);
 
-        initBugLens.run(
-                clientId,
-                uploadedFile,
-                1,
-                0.80);
+                initBugLens.run(
+                                clientId,
+                                uploadedFile,
+                                1,
+                                0.80, false);
 
-        return ResponseEntity.ok("Analysis complete");
-    }
-    
-    private Path saveFile(MultipartFile file)
-        throws IOException {
+                return ResponseEntity.ok("Analysis complete");
+        }
 
-    Path uploadDirectory =
-            Path.of("buglens/uploads");
-    Files.createDirectories(uploadDirectory);
+        private Path saveFile(MultipartFile file)
+                        throws IOException {
 
-    String fileName =
-            file.getOriginalFilename();
+                Path uploadDirectory = Path.of("buglens/uploads");
+                Files.createDirectories(uploadDirectory);
 
-    if (fileName == null || fileName.isBlank()) {
-        throw new IllegalArgumentException(
-                "Uploaded file has no filename.");
-    }
+                String fileName = file.getOriginalFilename();
 
-    Path targetPath =
-            uploadDirectory.resolve(fileName);
+                if (fileName == null || fileName.isBlank()) {
+                        throw new IllegalArgumentException(
+                                        "Uploaded file has no filename.");
+                }
 
-    Files.copy(
-            file.getInputStream(),
-            targetPath,
-            StandardCopyOption.REPLACE_EXISTING);
+                Path targetPath = uploadDirectory.resolve(fileName);
 
-    return targetPath;
+                Files.copy(
+                                file.getInputStream(),
+                                targetPath,
+                                StandardCopyOption.REPLACE_EXISTING);
+
+                return targetPath;
+        }
 }
-}
-
