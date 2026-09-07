@@ -51,7 +51,7 @@ public class BugLensController {
                 List<IncidentGroup> groups = initBugLens.run(
                                 clientId,
                                 uploadedFile,
-                                1,
+                                10,
                                 0.80, false);
 
                 return ResponseEntity.ok(groups);

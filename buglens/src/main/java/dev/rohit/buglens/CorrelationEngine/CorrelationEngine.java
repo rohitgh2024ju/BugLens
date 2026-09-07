@@ -34,6 +34,16 @@ public class CorrelationEngine {
                                 this.clientId,
                                 this.context);
 
+                System.out.println(
+                                "Events received: "
+                                                + this.correlationGroup.getEvents().size());
+
+                this.results = correlationGroup.correlateAll(time);
+
+                System.out.println(
+                                "Correlation results: "
+                                                + this.results.size());
+
                 this.results = correlationGroup.correlateAll(time);
 
                 return this.results;

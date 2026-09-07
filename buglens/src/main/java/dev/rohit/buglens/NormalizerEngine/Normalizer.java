@@ -16,173 +16,186 @@ import dev.rohit.buglens.ParserEngine.ParserEngine;
 
 public class Normalizer {
 
-    private final String parserClass;
-    private final Path inputPath;
+        private final String parserClass;
+        private final Path inputPath;
 
-    public Normalizer(
-            String parserClass,
-            Path inputPath) {
+        public Normalizer(
+                        String parserClass,
+                        Path inputPath) {
 
-        if (parserClass == null
-                || parserClass.isBlank()) {
+                if (parserClass == null
+                                || parserClass.isBlank()) {
 
-            throw new IllegalArgumentException(
-                    "Parser class is required");
+                        throw new IllegalArgumentException(
+                                        "Parser class is required");
+                }
+
+                if (inputPath == null) {
+
+                        throw new IllegalArgumentException(
+                                        "Input path is required");
+                }
+
+                this.parserClass = parserClass;
+                this.inputPath = inputPath;
         }
 
-        if (inputPath == null) {
+        public List<NormalizedEvent> normalize() {
 
-            throw new IllegalArgumentException(
-                    "Input path is required");
-        }
+                List<NormalizedEvent> normalizedEvents = new ArrayList<>();
 
-        this.parserClass = parserClass;
-        this.inputPath = inputPath;
-    }
+                try {
 
-    public List<NormalizedEvent> normalize() {
+                        String parserId = switch (parserClass) {
 
-        List<NormalizedEvent> normalizedEvents =
-                new ArrayList<>();
+                                case "SpringBootParser" -> "spring_boot";
 
-        try {
+                                default -> "unknown";
+                        };
 
-            String parserId = switch (parserClass) {
+                        ParserEngine parserEngine = new ParserEngine(
+                                        inputPath,
+                                        parserClass);
 
-                case "SpringBootParser" -> "spring_boot";
+                        MappingLoader mappingLoader = new MappingLoader();
 
-                default -> "unknown";
-            };
+                        List<FieldMapping> classMapping = mappingLoader.loadMapper(parserId);
 
-            ParserEngine parserEngine =
-                    new ParserEngine(
-                            inputPath,
-                            parserClass);
+                        System.out.println("PARSER CLASS: " + parserClass);
+                        System.out.println("PARSER ID: " + parserId);
+                        System.out.println("MAPPING COUNT: " + classMapping.size());
 
-            MappingLoader mappingLoader =
-                    new MappingLoader();
+                        classMapping.forEach(mapping -> System.out.println(
+                                        mapping.getSource()
+                                                        + " -> "
+                                                        + mapping.getTarget()));
 
-            List<FieldMapping> classMapping =
-                    mappingLoader.loadMapper(
-                            parserId);
+                        JSONArray parsedLogArray = parserEngine.runParser();
 
-            JSONArray parsedLogArray =
-                    parserEngine.runParser();
+                        System.out.println(
+                                        "PARSED LOG COUNT: "
+                                                        + parsedLogArray.length());
 
-            if (parsedLogArray == null
-                    || parsedLogArray.isEmpty()) {
+                        if (!parsedLogArray.isEmpty()) {
+
+                                System.out.println(
+                                                "FIRST PARSED LOG: "
+                                                                + parsedLogArray
+                                                                                .getJSONObject(0)
+                                                                                .toString(2));
+                        }
+
+                        System.out.println("PARSER CLASS: " + parserClass);
+                        System.out.println("PARSER ID: " + parserId);
+                        System.out.println("MAPPING COUNT: " + classMapping.size());
+
+                        classMapping.forEach(mapping -> System.out.println(
+                                        mapping.getSource()
+                                                        + " -> "
+                                                        + mapping.getTarget()));
+
+                        if (parsedLogArray == null
+                                        || parsedLogArray.isEmpty()) {
+
+                                return normalizedEvents;
+                        }
+
+                        for (Object item : parsedLogArray) {
+
+                                if (!(item instanceof JSONObject log)) {
+                                        continue;
+                                }
+
+                                NormalizedEvent event = new NormalizedEvent();
+
+                                event.setId(
+                                                UUID.randomUUID()
+                                                                .toString());
+
+                                for (FieldMapping mapping : classMapping) {
+
+                                        String sourceKey = mapping.getSource();
+
+                                        String targetKey = mapping.getTarget();
+
+                                        if (!log.has(sourceKey)
+                                                        || log.isNull(sourceKey)) {
+
+                                                continue;
+                                        }
+
+                                        Object value = convertJsonValue(
+                                                        log.get(sourceKey));
+
+                                        if ("timestamp"
+                                                        .equals(targetKey)) {
+
+                                                event.setTimestamp(
+                                                                (Instant) value);
+
+                                        } else if (targetKey.contains(".")) {
+
+                                                String[] parts = targetKey.split(
+                                                                "\\.",
+                                                                2);
+
+                                                event.putField(
+                                                                parts[0],
+                                                                parts[1],
+                                                                value);
+
+                                        } else {
+
+                                                event.putField(
+                                                                "metadata",
+                                                                targetKey,
+                                                                value);
+                                        }
+                                }
+
+                                normalizedEvents.add(event);
+                        }
+
+                } catch (Exception e) {
+
+                        System.err.println(
+                                        "Error while normalizing logs: "
+                                                        + e.getMessage());
+
+                        e.printStackTrace();
+                }
 
                 return normalizedEvents;
-            }
+        }
 
-            for (Object item : parsedLogArray) {
+        private Object convertJsonValue(Object value) {
+                if (value instanceof JSONObject jsonObject) {
 
-                if (!(item instanceof JSONObject log)) {
-                    continue;
+                        Map<String, Object> map = new HashMap<>();
+
+                        for (String key : jsonObject.keySet()) {
+
+                                map.put(
+                                                key,
+                                                convertJsonValue(
+                                                                jsonObject.get(key)));
+                        }
+
+                        return map;
                 }
 
-                NormalizedEvent event =
-                        new NormalizedEvent();
+                if (value instanceof JSONArray jsonArray) {
 
-                event.setId(
-                        UUID.randomUUID()
-                                .toString());
+                        List<Object> list = new ArrayList<>();
 
-                for (FieldMapping mapping
-                        : classMapping) {
+                        for (int i = 0; i < jsonArray.length(); i++) {
 
-                    String sourceKey =
-                            mapping.getSource();
-
-                    String targetKey =
-                            mapping.getTarget();
-
-                    if (!log.has(sourceKey)
-                            || log.isNull(sourceKey)) {
-
-                        continue;
-                    }
-
-                    Object value =
-                            convertJsonValue(
-                                    log.get(sourceKey));
-
-                    if ("timestamp"
-                            .equals(targetKey)) {
-
-                        event.setTimestamp(
-                                (Instant) value);
-
-                    } else if (
-                            targetKey.contains(".")) {
-
-                        String[] parts =
-                                targetKey.split(
-                                        "\\.",
-                                        2);
-
-                        event.putField(
-                                parts[0],
-                                parts[1],
-                                value);
-
-                    } else {
-
-                        event.putField(
-                                "metadata",
-                                targetKey,
-                                value);
-                    }
+                                list.add(
+                                                convertJsonValue(
+                                                                jsonArray.get(i)));
+                        }
+                        return list;
                 }
-
-                normalizedEvents.add(event);
-            }
-
-        } catch (Exception e) {
-
-            System.err.println(
-                    "Error while normalizing logs: "
-                            + e.getMessage());
-
-            e.printStackTrace();
+                return value;
         }
-
-        return normalizedEvents;
-    }
-
-    private Object convertJsonValue(Object value) {
-        if (value instanceof JSONObject jsonObject) {
-
-            Map<String, Object> map =
-                    new HashMap<>();
-
-            for (String key
-                    : jsonObject.keySet()) {
-
-                map.put(
-                        key,
-                        convertJsonValue(
-                                jsonObject.get(key)));
-            }
-
-            return map;
-        }
-
-        if (value instanceof JSONArray jsonArray) {
-
-            List<Object> list =
-                    new ArrayList<>();
-
-            for (int i = 0;
-                    i < jsonArray.length();
-                    i++) {
-
-                list.add(
-                        convertJsonValue(
-                                jsonArray.get(i)));
-            }
-            return list;
-        }
-        return value;
-    }
 }

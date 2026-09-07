@@ -1,12 +1,12 @@
 package dev.rohit.buglens.NormalizerEngine;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import dev.rohit.buglens.Configpaths.BugLensPaths;
 import dev.rohit.buglens.IngestionEngine.format.FormatDetector;
 import dev.rohit.buglens.IngestionEngine.format.LogFormat;
 import dev.rohit.buglens.NormalizerEngine.model.NormalizedEvent;
@@ -17,17 +17,12 @@ public class NormalizerEngine {
 
     public void runEngine(String clientId) {
         try {
-            FormatDetector formatDetector =
-                    new FormatDetector();
+            FormatDetector formatDetector = new FormatDetector();
 
-            LogFormat format =
-                    formatDetector.detect(clientId);
+            LogFormat format = formatDetector.detect(clientId);
 
-            Path inputPath =
-                    Paths.get(
-                            "buglens",
-                            "logs",
-                            "output-" + clientId + ".jsonl");
+            Path inputPath = BugLensPaths.LOGS_DIR.resolve(
+                    "output-" + clientId + ".jsonl");
 
             Normalizer normalizer = new Normalizer(format.getParser(), inputPath);
             List<NormalizedEvent> eventList = normalizer.normalize();

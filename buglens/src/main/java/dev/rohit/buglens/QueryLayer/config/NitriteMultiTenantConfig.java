@@ -5,6 +5,8 @@ import org.dizitart.no2.mvstore.MVStoreModule;
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import dev.rohit.buglens.Configpaths.BugLensPaths;
+
 import org.dizitart.no2.common.mapper.JacksonMapperModule;
 
 import java.io.File;
@@ -16,7 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class NitriteMultiTenantConfig {
 
     private static final Map<String, Nitrite> dbRegistry = new ConcurrentHashMap<>();
-    private static final String BASE_DB_DIR = "buglens/Database/tenants/";
 
     private NitriteMultiTenantConfig() {
     }
@@ -37,7 +38,7 @@ public class NitriteMultiTenantConfig {
     }
 
     private static Nitrite initDatabaseForClient(String clientId) {
-        String dbFilePath = BASE_DB_DIR + clientId + "-db.db";
+        String dbFilePath = BugLensPaths.DATABASE_DIR + clientId + "-db.db";
         File dbFile = new File(dbFilePath);
         File parentDir = dbFile.getParentFile();
 
@@ -67,7 +68,8 @@ public class NitriteMultiTenantConfig {
                     "Client ID cannot be null or empty");
         }
 
-        return Path.of(BASE_DB_DIR, clientId + "-db.db");
+        return BugLensPaths.DATABASE_DIR
+                .resolve(clientId + "-db.db");
     }
 
     public static void closeAll() {

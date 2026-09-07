@@ -6,6 +6,8 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
+import dev.rohit.buglens.Configpaths.BugLensPaths;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -13,13 +15,12 @@ import java.util.List;
 
 public class MappingLoader {
 
-    private static final String CONFIG_PATH = "buglens/config/normalization-mapping.xml";
 
     public void details() {
         try {
             XmlMapper xmlMapper = new XmlMapper();
             NormalizationMappings mappings = xmlMapper.readValue(
-                    new File(CONFIG_PATH), NormalizationMappings.class);
+                    BugLensPaths.NORMALIZATION_MAPPING_FILE.toFile(), NormalizationMappings.class);
 
             if (mappings.getFormats() != null) {
                 for (FormatConfig format : mappings.getFormats()) {
@@ -32,7 +33,7 @@ public class MappingLoader {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Failed to parse " + CONFIG_PATH + ": " + e.getMessage());
+            System.err.println("Failed to parse " + BugLensPaths.NORMALIZATION_MAPPING_FILE + ": " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -40,7 +41,7 @@ public class MappingLoader {
     public List<FieldMapping> loadMapper(String targetFormat) {
         try {
             XmlMapper xmlMapper = new XmlMapper();
-            File configFile = new File(CONFIG_PATH);
+            File configFile = BugLensPaths.NORMALIZATION_MAPPING_FILE.toFile();
 
             if (!configFile.exists()) {
                 System.err.println("Configuration file not found at path: " + configFile.getAbsolutePath());
@@ -57,7 +58,7 @@ public class MappingLoader {
                         .orElse(Collections.emptyList());
             }
         } catch (IOException e) {
-            System.err.println("Failed to parse " + CONFIG_PATH + ": " + e.getMessage());
+            System.err.println("Failed to parse " + BugLensPaths.NORMALIZATION_MAPPING_FILE + ": " + e.getMessage());
             e.printStackTrace();
         }
 

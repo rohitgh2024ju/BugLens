@@ -39,6 +39,21 @@ public class CorrelationGroup {
 
         this.allEvents = service.execute(clientId, allQuery);
 
+        System.out.println("LOADED EVENTS: " + this.allEvents.size());
+
+        this.allEvents.stream()
+                .limit(5)
+                .forEach(event -> {
+
+                    System.out.println("================================");
+                    System.out.println("ID: " + event.getId());
+                    System.out.println("TIMESTAMP: " + event.getTimestamp());
+                    System.out.println("SOURCE: " + event.getSource());
+                    System.out.println("OCCURRENCE: " + event.getOccurrence());
+                    System.out.println("CONTEXT: " + event.getContext());
+                    System.out.println("METADATA: " + event.getMetadata());
+                });
+
         this.correlationService = new CorrelationService(this.context);
 
         this.bundle = this.correlationService.getBundle();
@@ -108,16 +123,30 @@ public class CorrelationGroup {
     }
 
     public List<CorrelationResult> correlateAll(long time) {
+
         this.results = new ArrayList<>();
+
+        System.out.println("TOTAL EVENTS: " + this.allEvents.size());
 
         for (CorrelationType type : this.bundle.getSupportedCorrelationTypes()) {
 
-            this.results.addAll(
-                    this.bundle.correlate(
-                            this.allEvents,
-                            type,
-                            time));
+            System.out.println("TRYING CORRELATION TYPE: " + type);
+
+            List<CorrelationResult> correlationResults = this.bundle.correlate(
+                    this.allEvents,
+                    type,
+                    time);
+
+            System.out.println(
+                    "RESULTS FOR " + type + ": "
+                            + correlationResults.size());
+
+            this.results.addAll(correlationResults);
         }
+
+        System.out.println(
+                "TOTAL CORRELATION RESULTS: "
+                        + this.results.size());
 
         return this.results;
     }
