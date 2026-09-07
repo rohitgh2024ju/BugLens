@@ -51,8 +51,10 @@ public class LogFormatter {
         logLine = argsPattern.matcher(logLine).replaceAll("{ARGS}");
 
         logLine = combineArgsToMessage(logLine);
-        return collapseKeyValues(logLine);
-    }
+        return collapseKeyValues(logLine)
+                .replaceAll("\\s+", " ")
+                .trim();
+        }
 
     private String combineArgsToMessage(String formattedLog) {
         // Matches from the FIRST {ARGS} all the way to the LAST {ARGS}

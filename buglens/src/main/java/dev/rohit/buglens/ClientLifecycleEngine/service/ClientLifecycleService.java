@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 
 import dev.rohit.buglens.ClientLifecycleEngine.model.ClientSession;
+import dev.rohit.buglens.Configpaths.BugLensPaths;
 import dev.rohit.buglens.QueryLayer.config.NitriteMultiTenantConfig;
 
 @Service
@@ -82,7 +83,8 @@ public class ClientLifecycleService {
     }
 
     private void deleteCollectedLog(String clientId) {
-        Path logPath = Path.of("buglens/logs", "output-" + clientId + ".jsonl");
+        Path logPath = BugLensPaths.LOGS_DIR
+                .resolve("output-" + clientId + ".jsonl");
         try {
             Files.deleteIfExists(logPath);
         } catch (Exception e) {
@@ -91,7 +93,7 @@ public class ClientLifecycleService {
     }
 
     private void deleteClientUploads(String clientId) {
-        Path uploadDirectory = Path.of("buglens/uploads", clientId);
+        Path uploadDirectory = BugLensPaths.UPLOADS_DIR.resolve(clientId);
         try {
             if (Files.exists(uploadDirectory)) {
 

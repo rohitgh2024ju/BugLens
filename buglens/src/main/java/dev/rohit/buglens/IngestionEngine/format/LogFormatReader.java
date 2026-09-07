@@ -15,6 +15,11 @@ public class LogFormatReader {
     }
 
     public JSONObject readFile() throws JSONException, IOException {
+        System.out.println("FORMAT FILE PATH: " +
+        Paths.get(this.path).toAbsolutePath());
+
+        System.out.println("FORMAT FILE EXISTS: " +
+                Files.exists(Paths.get(this.path)));
         String content = new String(Files.readAllBytes(Paths.get(path)));
 
         return new JSONObject(content);

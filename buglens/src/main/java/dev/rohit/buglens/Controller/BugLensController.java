@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import dev.rohit.buglens.Application.InitBugLens;
 import dev.rohit.buglens.ClientLifecycleEngine.service.ClientLifecycleService;
+import dev.rohit.buglens.Configpaths.BugLensPaths;
 import dev.rohit.buglens.IncidentGroupingEngine.model.IncidentGroup;
 
 @RestController
@@ -58,8 +59,7 @@ public class BugLensController {
 
         private Path saveFile(MultipartFile file, String clientId)
                         throws IOException {
-
-                Path uploadDirectory = Path.of("buglens/uploads", clientId);
+                Path uploadDirectory = BugLensPaths.UPLOADS_DIR.resolve(clientId);
                 Files.createDirectories(uploadDirectory);
 
                 String originalFilename = file.getOriginalFilename();

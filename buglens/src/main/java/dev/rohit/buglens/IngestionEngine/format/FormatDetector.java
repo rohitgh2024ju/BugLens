@@ -1,7 +1,6 @@
 package dev.rohit.buglens.IngestionEngine.format;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,6 +8,7 @@ import java.util.stream.Collectors;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import dev.rohit.buglens.Configpaths.BugLensPaths;
 import dev.rohit.buglens.IngestionEngine.Reader.LogReader;
 import dev.rohit.buglens.IngestionEngine.Structure.LogFormatter;
 
@@ -19,9 +19,9 @@ public class FormatDetector {
         public LogFormat detect(String clientId) {
 
                 try {
-                        Path outputDirectory = Paths.get("buglens/logs");
+                        Path outputDirectory = BugLensPaths.LOGS_DIR;
                         Path outputPath = outputDirectory.resolve("output-" + clientId + ".jsonl");
-                
+
                         // Initialize LogReader and LogFormatter
                         LogReader logReader = new LogReader(
                                         outputPath);
@@ -41,14 +41,27 @@ public class FormatDetector {
                         // Normalize / format the raw log
                         String formattedLogLineTest = formatter.format(rawLogLineTest);
 
+                        System.out.println("OUTPUT PATH: " + outputPath.toAbsolutePath());
+                        System.out.println("RAW LOG SAMPLE: " + rawLogLineTest);
+                        System.out.println("FORMATTED LOG SAMPLE: " + formattedLogLineTest);
+
+                        System.out.println("RAW LOG:");
+                        System.out.println(rawLogLineTest);
+
+                        System.out.println("FORMATTED LOG:");
+                        System.out.println(formattedLogLineTest);
+
                         // Compare with known log formats
                         FormatComparator formatComparator = new FormatComparator(
                                         formattedLogLineTest,
-                                        "buglens/Resources/log_formats.jsonl",
+                                        BugLensPaths.LOG_FORMATS_FILE.toString(),
                                         fileId);
 
                         // Raw comparison results
                         List<String[]> result = formatComparator.compare();
+
+                        System.out.println("COMPARISON RESULT SIZE:" + result.size());
+                        System.out.println("MATCHES FOUND: " + result.size());
 
                         // Convert String[] -> LogFormat
                         this.formatList = result.stream()
@@ -59,9 +72,10 @@ public class FormatDetector {
                                                         Double.parseDouble(entry[3].replace("%", ""))))
                                         .collect(Collectors.toList());
 
+                        System.out.println(result.size());
                         // No matching formats
                         if (this.formatList.isEmpty()) {
-                                return null;
+                                throw new IllegalArgumentException("Unsupported or unrecognized log format");
                         }
 
                         // Sort by confidence, highest first
@@ -80,10 +94,9 @@ public class FormatDetector {
                         return bestFormat;
 
                 } catch (Exception e) {
-
-                        e.printStackTrace();
-
-                        return null;
+                        throw new IllegalStateException(
+                                        "Failed to detect log format for client: " + clientId,
+                                        e);
                 }
         }
 
