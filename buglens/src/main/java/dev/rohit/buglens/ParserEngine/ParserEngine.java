@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import dev.rohit.buglens.BLR.LogParser;
 import dev.rohit.buglens.IngestionEngine.Reader.LogReader;
 
 public class ParserEngine {

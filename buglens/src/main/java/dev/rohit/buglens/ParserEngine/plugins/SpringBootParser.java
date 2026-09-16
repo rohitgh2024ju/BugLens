@@ -1,7 +1,8 @@
 package dev.rohit.buglens.ParserEngine.plugins;
 
-import dev.rohit.buglens.ParserEngine.LogParser;
 import org.json.JSONObject;
+
+import dev.rohit.buglens.BLR.LogParser;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

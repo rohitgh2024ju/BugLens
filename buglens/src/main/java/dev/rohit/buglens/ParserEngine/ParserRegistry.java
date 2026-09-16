@@ -1,5 +1,6 @@
 package dev.rohit.buglens.ParserEngine;
 
+import dev.rohit.buglens.BLR.LogParser;
 import dev.rohit.buglens.ParserEngine.plugins.SpringBootParser;
 
 // finds the correct parser

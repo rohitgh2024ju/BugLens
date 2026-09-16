@@ -1,4 +1,4 @@
-package dev.rohit.buglens.ParserEngine;
+package dev.rohit.buglens.BLR;
 
 import org.json.JSONObject;
 

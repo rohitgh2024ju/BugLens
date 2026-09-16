@@ -1,4 +1,4 @@
-package dev.rohit.buglens.BLR.Bundles;
+package dev.rohit.buglens.BLR.Bundles.SpringBootBundler;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import dev.rohit.buglens.BLR.Bundles.CorrelationBundle;
 import dev.rohit.buglens.CorrelationEngine.model.CorrelationResult;
 import dev.rohit.buglens.CorrelationEngine.model.CorrelationType;
 import dev.rohit.buglens.GraphEngine.model.EvidenceScore;
@@ -35,7 +36,6 @@ public class SpringBootBundle implements CorrelationBundle {
     public Map<CorrelationType, EvidenceScore> getEvidenceScores() {
         Map<CorrelationType, EvidenceScore> scores = new EnumMap<>(CorrelationType.class);
 
-        scores.put(CorrelationType.REQUEST_ID, new EvidenceScore(0.90, 0.95));
         scores.put(CorrelationType.REQUEST_ID, new EvidenceScore(0.90, 0.95));
         scores.put(CorrelationType.TRACE_ID, new EvidenceScore(0.95, 0.98));
         scores.put(CorrelationType.TRANSACTION_ID, new EvidenceScore(0.92, 0.95));
