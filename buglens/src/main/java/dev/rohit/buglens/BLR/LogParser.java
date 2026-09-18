@@ -2,7 +2,8 @@ package dev.rohit.buglens.BLR;
 
 import org.json.JSONObject;
 
-// common interface for every parser plugins
+// Common interface for every parser plugin
 public interface LogParser {
-    public JSONObject parse(String logLine);
+
+    JSONObject parse(String logLine);
 }

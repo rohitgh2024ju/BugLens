@@ -24,6 +24,7 @@ public final class BugLensPaths {
                 System.out.println("DATABASE DIR: " + DATABASE_DIR);
                 System.out.println("LOGS DIR: " + LOGS_DIR);
                 System.out.println("RESOURCES DIR: " + RESOURCES_DIR);
+                System.out.println("NORMALIZATION DIR: " + NORMALIZATION_MAPPING_FILE);
         }
 
         private BugLensPaths() {

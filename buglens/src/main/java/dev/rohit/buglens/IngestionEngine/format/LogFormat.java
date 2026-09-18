@@ -6,7 +6,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class LogFormat {
+
     private String fileId;
+    private String formatId;
     private String name;
     private String parser;
     private double confidence;

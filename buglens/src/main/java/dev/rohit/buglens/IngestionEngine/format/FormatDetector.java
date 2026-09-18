@@ -59,23 +59,48 @@ public class FormatDetector {
 
                         // Raw comparison results
                         List<String[]> result = formatComparator.compare();
+                        for (String[] entry : result) {
+                        System.out.println(
+                                "RESULT -> "
+                                        + "fileId=" + entry[0]
+                                        + " | formatId=" + entry[1]
+                                        + " | name=" + entry[2]
+                                        + " | parser=" + entry[3]
+                                        + " | confidence=" + entry[4]
+                        );
+                        }
 
                         System.out.println("COMPARISON RESULT SIZE:" + result.size());
                         System.out.println("MATCHES FOUND: " + result.size());
 
                         // Convert String[] -> LogFormat
                         this.formatList = result.stream()
-                                        .map(entry -> new LogFormat(
-                                                        entry[0],
-                                                        entry[1],
-                                                        entry[2],
-                                                        Double.parseDouble(entry[3].replace("%", ""))))
-                                        .collect(Collectors.toList());
+                                .map(entry -> new LogFormat(
+                                        entry[0],
+                                        entry[1],
+                                        entry[2],
+                                        entry[3],
+                                        Double.parseDouble(
+                                                entry[4].replace("%", "")
+                                        )
+                                ))
+                                .collect(Collectors.toList());
 
                         System.out.println(result.size());
                         // No matching formats
                         if (this.formatList.isEmpty()) {
                                 throw new IllegalArgumentException("Unsupported or unrecognized log format");
+                        }
+
+                        for (LogFormat format : this.formatList) {
+                        System.out.println(
+                                "LOG FORMAT OBJECT -> "
+                                + "fileId=" + format.getFileId()
+                                + " | formatId=" + format.getFormatId()
+                                + " | name=" + format.getName()
+                                + " | parser=" + format.getParser()
+                                + " | confidence=" + format.getConfidence()
+                        );
                         }
 
                         // Sort by confidence, highest first

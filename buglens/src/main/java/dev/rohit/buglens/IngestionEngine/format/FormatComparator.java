@@ -32,6 +32,7 @@ public class FormatComparator {
             String formatName = formatObj.getString("name");
             String formatStructure = formatObj.getString("structure");
             String formatParser = formatObj.getString("parser");
+            String formatId = formatObj.getString("format_id");
 
             String[] formatStructureList = formatStructure.split("\\s+");
 
@@ -50,7 +51,7 @@ public class FormatComparator {
                     * 100;
             String confidence = String.format("%.2f%%", confidenceValue);
 
-            resultCompare.add(new String[] { fileId, formatName, formatParser, confidence });
+            resultCompare.add(new String[] { fileId, formatId, formatName, formatParser, confidence });
         }
 
         return resultCompare;

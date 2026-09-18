@@ -1,33 +1,43 @@
+# Maven
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
+
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### STS ###
+# BugLens runtime data
+Database/
+logs/
+uploads/
+
+# STS / Eclipse
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
+# IntelliJ IDEA
+.idea/
 *.iws
 *.iml
 *.ipr
 
-### NetBeans ###
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
+
+# Build
 build/
+
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
+# VS Code
 .vscode/
