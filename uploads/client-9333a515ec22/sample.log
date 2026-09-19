@@ -1,0 +1,53 @@
+2026-09-07 20:00:01.123 INFO  [http-nio-8080-exec-1] com.buglens.order.OrderController : received order request requestId=req-001
+2026-09-07 20:00:01.245 INFO  [http-nio-8080-exec-1] com.buglens.order.OrderService : validating order requestId=req-001
+2026-09-07 20:00:01.378 INFO  [http-nio-8080-exec-1] com.buglens.inventory.InventoryService : checking inventory requestId=req-001
+2026-09-07 20:00:01.512 INFO  [http-nio-8080-exec-1] com.buglens.payment.PaymentService : processing payment requestId=req-001
+2026-09-07 20:00:01.781 INFO  [http-nio-8080-exec-1] com.buglens.order.OrderService : order created successfully requestId=req-001
+
+2026-09-07 20:01:10.123 INFO  [http-nio-8080-exec-2] com.buglens.order.OrderController : received order request requestId=req-002
+2026-09-07 20:01:10.245 INFO  [http-nio-8080-exec-2] com.buglens.order.OrderService : validating order requestId=req-002
+2026-09-07 20:01:10.401 INFO  [http-nio-8080-exec-2] com.buglens.inventory.InventoryService : checking inventory requestId=req-002
+2026-09-07 20:01:10.623 WARN  [http-nio-8080-exec-2] com.buglens.inventory.InventoryService : low inventory detected requestId=req-002
+2026-09-07 20:01:10.890 INFO  [http-nio-8080-exec-2] com.buglens.payment.PaymentService : processing payment requestId=req-002
+2026-09-07 20:01:11.102 INFO  [http-nio-8080-exec-2] com.buglens.order.OrderService : order created successfully requestId=req-002
+
+2026-09-07 20:02:20.123 INFO  [http-nio-8080-exec-3] com.buglens.order.OrderController : received order request requestId=req-003
+2026-09-07 20:02:20.210 INFO  [http-nio-8080-exec-3] com.buglens.order.OrderService : validating order requestId=req-003
+2026-09-07 20:02:20.367 INFO  [http-nio-8080-exec-3] com.buglens.inventory.InventoryService : checking inventory requestId=req-003
+2026-09-07 20:02:20.498 INFO  [http-nio-8080-exec-3] com.buglens.payment.PaymentService : processing payment requestId=req-003
+2026-09-07 20:02:20.701 WARN  [http-nio-8080-exec-3] com.buglens.payment.PaymentService : payment gateway response delayed requestId=req-003
+2026-09-07 20:02:21.025 ERROR [http-nio-8080-exec-3] com.buglens.payment.PaymentService : payment gateway connection failed requestId=req-003
+2026-09-07 20:02:21.087 ERROR [http-nio-8080-exec-3] com.buglens.payment.PaymentService : unable to process payment requestId=req-003
+2026-09-07 20:02:21.156 ERROR [http-nio-8080-exec-3] com.buglens.order.OrderService : order processing failed requestId=req-003
+2026-09-07 20:02:21.224 ERROR [http-nio-8080-exec-3] com.buglens.order.OrderController : failed to create order requestId=req-003
+
+2026-09-07 20:03:05.123 INFO  [http-nio-8080-exec-4] com.buglens.order.OrderController : received order request requestId=req-004
+2026-09-07 20:03:05.287 INFO  [http-nio-8080-exec-4] com.buglens.order.OrderService : validating order requestId=req-004
+2026-09-07 20:03:05.412 INFO  [http-nio-8080-exec-4] com.buglens.inventory.InventoryService : checking inventory requestId=req-004
+2026-09-07 20:03:05.634 INFO  [http-nio-8080-exec-4] com.buglens.payment.PaymentService : processing payment requestId=req-004
+2026-09-07 20:03:05.897 INFO  [http-nio-8080-exec-4] com.buglens.order.OrderService : order created successfully requestId=req-004
+
+2026-09-07 20:04:15.123 INFO  [http-nio-8080-exec-5] com.buglens.order.OrderController : received order request requestId=req-005
+2026-09-07 20:04:15.246 INFO  [http-nio-8080-exec-5] com.buglens.order.OrderService : validating order requestId=req-005
+2026-09-07 20:04:15.378 INFO  [http-nio-8080-exec-5] com.buglens.inventory.InventoryService : checking inventory requestId=req-005
+2026-09-07 20:04:15.523 ERROR [http-nio-8080-exec-5] com.buglens.inventory.InventoryService : database connection failed requestId=req-005
+2026-09-07 20:04:15.602 ERROR [http-nio-8080-exec-5] com.buglens.inventory.InventoryRepository : failed to retrieve inventory requestId=req-005
+2026-09-07 20:04:15.687 ERROR [http-nio-8080-exec-5] com.buglens.order.OrderService : inventory validation failed requestId=req-005
+2026-09-07 20:04:15.745 ERROR [http-nio-8080-exec-5] com.buglens.order.OrderController : order request failed requestId=req-005
+
+2026-09-07 20:05:30.123 INFO  [http-nio-8080-exec-6] com.buglens.order.OrderController : received order request requestId=req-006
+2026-09-07 20:05:30.256 INFO  [http-nio-8080-exec-6] com.buglens.order.OrderService : validating order requestId=req-006
+2026-09-07 20:05:30.401 INFO  [http-nio-8080-exec-6] com.buglens.inventory.InventoryService : checking inventory requestId=req-006
+2026-09-07 20:05:30.598 WARN  [http-nio-8080-exec-6] com.buglens.inventory.InventoryService : inventory service response slow requestId=req-006
+2026-09-07 20:05:30.812 INFO  [http-nio-8080-exec-6] com.buglens.payment.PaymentService : processing payment requestId=req-006
+2026-09-07 20:05:31.094 INFO  [http-nio-8080-exec-6] com.buglens.order.OrderService : order created successfully requestId=req-006
+
+2026-09-07 20:06:45.123 INFO  [http-nio-8080-exec-7] com.buglens.order.OrderController : received order request requestId=req-007
+2026-09-07 20:06:45.249 INFO  [http-nio-8080-exec-7] com.buglens.order.OrderService : validating order requestId=req-007
+2026-09-07 20:06:45.396 INFO  [http-nio-8080-exec-7] com.buglens.inventory.InventoryService : checking inventory requestId=req-007
+2026-09-07 20:06:45.574 INFO  [http-nio-8080-exec-7] com.buglens.payment.PaymentService : processing payment requestId=req-007
+2026-09-07 20:06:45.867 INFO  [http-nio-8080-exec-7] com.buglens.order.OrderService : order created successfully requestId=req-007
+
+2026-09-07 20:07:50.123 INFO  [main] com.buglens.system.HealthService : application health check started requestId=system-001
+2026-09-07 20:07:50.245 INFO  [main] com.buglens.system.HealthService : database connection healthy requestId=system-001
+2026-09-07 20:07:50.389 INFO  [main] com.buglens.system.HealthService : application health check completed requestId=system-001

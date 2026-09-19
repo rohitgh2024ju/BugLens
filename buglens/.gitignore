@@ -41,3 +41,14 @@ build/
 
 # VS Code
 .vscode/
+
+# env file
+.env
+
+# RSA private key
+.Documents/
+
+# Databases and log uploads
+../Database
+../logs
+../uploads
