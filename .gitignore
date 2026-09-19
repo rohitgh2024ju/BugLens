@@ -1,2 +1,22 @@
 .github/
 .vscode/
+
+# Runtime data
+Database/
+logs/
+uploads/
+
+# Environment
+.env
+
+# Java/Maven
+target/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
