@@ -1,0 +1,182 @@
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.header {
+    position: fixed;
+
+    top: 0;
+    left: 285px;
+    right: 0;
+
+    height: 70px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 24px;
+
+    background: #090b0f;
+
+    border-bottom: 1px solid #1b1e24;
+
+    z-index: 100;
+
+    transition: left 0.3s ease;
+}
+
+.header.collapsed {
+    left: 72px;
+}
+
+/* =========================================================
+   SEARCH BAR
+   ========================================================= */
+
+.search-bar {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 600px;
+
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 16px;
+
+    box-sizing: border-box;
+
+    background: #0d1015;
+    border: 1px solid #20242b;
+    border-radius: 10px;
+}
+
+
+/* =========================================================
+   SEARCH ICON
+   ========================================================= */
+
+.search-icon {
+    flex-shrink: 0;
+    color: #697386;
+}
+
+
+/* =========================================================
+   SEARCH INPUT
+   ========================================================= */
+
+.search-bar input {
+    flex: 1;
+    min-width: 0;
+
+    margin-left: 10px;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #e5e7eb;
+
+    font-size: 16px;
+    font-family: "Inter", sans-serif;
+}
+
+.search-bar input::placeholder {
+    color: #596273;
+}
+
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+
+.header-settings {
+    width: 40px;
+    height: 40px;
+
+    margin-left: 20px;
+    padding: 0;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    background-color: #0d1015;
+    border: 1px solid #252a32;
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   SETTINGS ICON
+   ========================================================= */
+
+.header-settings .settings-icon {
+    color: #697386;
+    transition: color 0.2s ease;
+}
+
+
+/* =========================================================
+   SETTINGS HOVER
+   ========================================================= */
+
+.header-settings:hover {
+    background-color: #11151b;
+}
+
+.header-settings:hover .settings-icon {
+    color: #20d7ee;
+}
+
+
+/* =========================================================
+   SEPARATOR
+   ========================================================= */
+
+.separator {
+    width: 1px;
+    height: 36px;
+
+    flex-shrink: 0;
+
+    margin-left: 40px;
+    margin-right: 40px;
+
+    background-color: #31314b;
+}
+
+
+/* =========================================================
+   CLIENT IDENTITY
+   ========================================================= */
+
+.client-identity {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 1;
+
+    white-space: nowrap;
+
+    color: #00E5FF;
+
+    font-size: 18px;
+    font-family: "Inter", sans-serif;
+
+    letter-spacing: 1.5px;
+}

@@ -1,0 +1,68 @@
+/* =========================================================
+   GLOBAL APP
+   ========================================================= */
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #090b0f;
+}
+
+.app {
+  width: 100%;
+  min-height: 100vh;
+
+  background: #090b0f;
+}
+
+
+/* =========================================================
+   MAIN AREA
+   ========================================================= */
+
+.main {
+  margin-left: 285px;
+
+  min-height: 100vh;
+
+  box-sizing: border-box;
+
+  transition: margin-left 0.3s ease;
+}
+
+.main.collapsed {
+  margin-left: 72px;
+}
+
+
+/* =========================================================
+   SCROLLABLE BODY
+   ========================================================= */
+
+.main-body {
+  min-height: 100vh;
+
+  padding-top: 70px;
+  box-sizing: border-box;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  background-color: #090b0f;
+
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px),
+    linear-gradient(90deg,
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px);
+
+  background-size: 45px 45px;
+}
