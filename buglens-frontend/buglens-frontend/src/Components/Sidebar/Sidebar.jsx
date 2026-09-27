@@ -4,7 +4,9 @@ import {
   LayoutDashboard,
   UploadCloud,
   CircleAlert,
-  Share2
+  Share2,
+  PanelLeftClose,
+  PanelRightClose
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
@@ -62,7 +64,7 @@ export function Sidebar({ collapsed, setCollapsed }) {
         className="collapse-button"
         onClick={() => setCollapsed((prev) => !prev)}
       >
-        {collapsed ? "=>" : "<="}
+        {collapsed ? (<PanelRightClose size={18} />) : (<PanelLeftClose size={18} />)}
       </button>
 
       <div className="system-status">
