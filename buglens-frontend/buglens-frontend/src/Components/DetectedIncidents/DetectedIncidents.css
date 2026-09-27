@@ -1,0 +1,273 @@
+.incident-list-card {
+    width: 100%;
+    background: #0d1015;
+    border: 1px solid #20242b;
+    border-radius: 14px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+/* ================================
+   HEADER
+   ================================ */
+
+.incident-list-head {
+    height: 74px;
+    padding: 0 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    box-sizing: border-box;
+    border-bottom: 1px solid #20242b;
+}
+
+.incident-list-head h2 {
+    margin: 0;
+
+    color: #e5e9ef;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.view-all {
+    color: #20d7ee;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.view-all:hover {
+    color: #5de8f7;
+}
+
+
+/* ================================
+   INCIDENT LIST
+   ================================ */
+
+.incident-list {
+    width: 100%;
+}
+
+
+/* ================================
+   INCIDENT ROW
+   ================================ */
+
+.incident-row {
+    min-height: 98px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 18px 24px;
+
+    box-sizing: border-box;
+
+    border-bottom: 1px solid #20242b;
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.incident-row:last-child {
+    border-bottom: none;
+}
+
+.incident-row:hover {
+    background: #11151b;
+}
+
+
+/* ================================
+   SEVERITY DOT
+   ================================ */
+
+.incident-dot {
+    width: 10px;
+    height: 10px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+    margin-right: 16px;
+}
+
+.incident-dot.critical {
+    background: #ff3864;
+}
+
+.incident-dot.high {
+    background: #ff9638;
+}
+
+.incident-dot.medium {
+    background: #ffd21c;
+}
+
+.incident-dot.low {
+    background: #36b9e8;
+}
+
+
+/* ================================
+   INCIDENT INFORMATION
+   ================================ */
+
+.incident-info {
+    min-width: 0;
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+.incident-title {
+    color: #e5e9ef;
+
+    font-size: 17px;
+    font-weight: 500;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.incident-details {
+    color: #667085;
+
+    font-size: 13px;
+
+    font-family: "Roboto Mono", monospace;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* ================================
+   RIGHT SIDE
+   ================================ */
+
+.incident-action {
+    display: flex;
+    align-items: center;
+
+    gap: 24px;
+
+    margin-left: 20px;
+
+    flex-shrink: 0;
+}
+
+
+/* ================================
+   SEVERITY BADGE
+   ================================ */
+
+.severity-badge {
+    min-width: 74px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 6px 10px;
+
+    border-radius: 8px;
+
+    font-family: "Roboto Mono", monospace;
+    font-size: 12px;
+    font-weight: 600;
+
+    box-sizing: border-box;
+}
+
+.badge-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+}
+
+
+/* Critical */
+
+.severity-badge.critical {
+    color: #ff3864;
+    border: 1px solid #742238;
+    background: #24101a;
+}
+
+.severity-badge.critical .badge-dot {
+    background: #ff3864;
+}
+
+
+/* High */
+
+.severity-badge.high {
+    color: #ff9638;
+    border: 1px solid #70451e;
+    background: #241b12;
+}
+
+.severity-badge.high .badge-dot {
+    background: #ff9638;
+}
+
+
+/* Medium */
+
+.severity-badge.medium {
+    color: #ffd21c;
+    border: 1px solid #71601b;
+    background: #24200d;
+}
+
+.severity-badge.medium .badge-dot {
+    background: #ffd21c;
+}
+
+
+/* Low */
+
+.severity-badge.low {
+    color: #36b9e8;
+    border: 1px solid #20566b;
+    background: #0d2028;
+}
+
+.severity-badge.low .badge-dot {
+    background: #36b9e8;
+}
+
+
+/* ================================
+   ARROW
+   ================================ */
+
+.incident-arrow {
+    width: 24px;
+
+    color: #596273;
+
+    font-size: 22px;
+
+    text-align: center;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.incident-row:hover .incident-arrow {
+    color: #20d7ee;
+    transform: translateX(3px);
+}

@@ -18,7 +18,7 @@
 }
 
 .sidebar.collapsed {
-    width: 72px;
+    width: 80px;
 }
 
 
@@ -32,6 +32,7 @@
     align-items: center;
 
     padding: 0 24px;
+    transition: background 0.5 ease;
 
     box-sizing: border-box;
 
@@ -104,9 +105,10 @@
 
     border-radius: 9px;
 
-    color: #8c96a8;
+    color: inherit;
 
     font-size: 16px;
+    text-decoration: none;
 
     cursor: pointer;
 

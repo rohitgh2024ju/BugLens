@@ -10,8 +10,9 @@ import {
 import "./Dashboard.css";
 import { StatCard } from "./StatCard";
 import { Overview } from "../Overview/Overview";
+import { DetectedIncidents } from "../DetectedIncidents/DetectedIncidents";
 
-export function Dashboard({ results, eventsOverview }) {
+export function Dashboard({ results, eventsOverview, incidents }) {
   return (
     <main className="dashboard">
       <div className="dashboard-head">
@@ -70,7 +71,8 @@ export function Dashboard({ results, eventsOverview }) {
         />
       </div>
 
-      <Overview eventsOverview={eventsOverview}/>
+      <Overview eventsOverview={eventsOverview} />
+      <DetectedIncidents incidents={incidents} />
     </main>
   );
 }

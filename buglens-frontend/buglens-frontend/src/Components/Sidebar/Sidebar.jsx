@@ -1,10 +1,18 @@
 import "./Sidebar.css";
+import {
+  Bug,
+  LayoutDashboard,
+  UploadCloud,
+  CircleAlert,
+  Share2
+} from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 export function Sidebar({ collapsed, setCollapsed }) {
   return (
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
       <div className="sidebar-logo">
-        <div className="sidebar-icon">🐞</div>
+        <Bug size={34} strokeWidth={2.5} />
 
         <div className="logo-info">
           <div className="logo-title">BugLens</div>
@@ -15,25 +23,37 @@ export function Sidebar({ collapsed, setCollapsed }) {
 
       <div className="sidebar-content">
         <nav className="sidebar-nav">
-          <div className="nav-item active">
-            <span>▦</span>
+          <NavLink
+            to="/"
+            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+          >
+            <LayoutDashboard size={18} />
             <span className="nav-label">Dashboard</span>
-          </div>
+          </NavLink>
 
-          <div className="nav-item">
-            <span>☁</span>
+          <NavLink
+            to="/upload"
+            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+          >
+            <UploadCloud size={18} />
             <span className="nav-label">Upload Logs</span>
-          </div>
+          </NavLink>
 
-          <div className="nav-item">
-            <span>⬡</span>
+          <NavLink
+            to="/incidents"
+            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+          >
+            <CircleAlert size={18} />
             <span className="nav-label">Incidents</span>
-          </div>
+          </NavLink>
 
-          <div className="nav-item">
-            <span>♧</span>
+          <NavLink
+            to="/dependency-graph"
+            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+          >
+            <Share2 size={18} />
             <span className="nav-label">Dependency Graph</span>
-          </div>
+          </NavLink>
         </nav>
       </div>
 
