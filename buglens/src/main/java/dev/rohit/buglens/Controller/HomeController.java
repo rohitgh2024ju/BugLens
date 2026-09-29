@@ -25,7 +25,7 @@ public class HomeController {
         DirectoryInitializer.initialize();
 
         if (clientId == null) {
-            clientId = "client-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+            clientId = "clt-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
 
             Cookie cookie = new Cookie("buglens-client-id", clientId);
 

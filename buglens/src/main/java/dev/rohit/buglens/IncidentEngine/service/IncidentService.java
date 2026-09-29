@@ -42,8 +42,13 @@ public class IncidentService {
                 Set<FailureContext> incidentContexts = new HashSet<>();
                 incidentContexts.add(context);
 
+                String incidentId = "inc-" + UUID.randomUUID()
+                        .toString()
+                        .replace("-", "")
+                        .substring(0, 8);
+
                 Incident incident = new Incident(
-                        UUID.randomUUID().toString(),
+                        incidentId,
                         incidentContexts);
 
                 this.incidents.add(incident);
