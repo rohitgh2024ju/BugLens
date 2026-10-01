@@ -12,6 +12,8 @@ import dev.rohit.buglens.CollectorEngine.CollectorEngine;
 import dev.rohit.buglens.Configpaths.BugLensPaths;
 import dev.rohit.buglens.CorrelationEngine.CorrelationEngine;
 import dev.rohit.buglens.CorrelationEngine.model.CorrelationResult;
+import dev.rohit.buglens.Dashboard.DashboardResponse;
+import dev.rohit.buglens.Dashboard.DashboardService;
 import dev.rohit.buglens.GraphEngine.model.EventGraph;
 import dev.rohit.buglens.GraphEngine.service.GraphBuilder;
 import dev.rohit.buglens.IncidentEngine.detector.FailureIncidentDetector;
@@ -19,8 +21,6 @@ import dev.rohit.buglens.IncidentEngine.model.FailureContext;
 import dev.rohit.buglens.IncidentEngine.model.Incident;
 import dev.rohit.buglens.IncidentEngine.service.FailureContextService;
 import dev.rohit.buglens.IncidentEngine.service.IncidentService;
-import dev.rohit.buglens.IncidentGroupingEngine.model.IncidentGroup;
-import dev.rohit.buglens.IncidentGroupingEngine.service.IncidentGroupingService;
 import dev.rohit.buglens.IngestionEngine.context.ProcessingContext;
 import dev.rohit.buglens.IngestionEngine.format.FormatDetector;
 import dev.rohit.buglens.IngestionEngine.format.LogFormat;
@@ -32,367 +32,299 @@ import dev.rohit.buglens.QueryLayer.repository.EventRepository;
 @Service
 public class InitBugLens {
 
-    public List<IncidentGroup> run(
-            String clientId,
-            Path inputPath,
-            long seconds,
-            double threshold,
-            boolean print)
-            throws IOException,
-            IllegalArgumentException,
-            IllegalAccessException {
+        private final DashboardService dashboardService;
 
-        BugLensPaths.printPaths();
-
-        try {
-
-            /*
-             * --------------------------------------------------
-             * 1. COLLECT RAW LOG DATA
-             * --------------------------------------------------
-             */
-
-            Path outputDirectory =
-                    BugLensPaths.LOGS_DIR;
-
-            CollectorEngine collectorEngine =
-                    new CollectorEngine(
-                            inputPath,
-                            outputDirectory,
-                            clientId
-                    );
-
-            collectorEngine.collectJson();
-
-            Path outputPath =
-                    collectorEngine.getOutputPath();
-
-            System.out.println(
-                    "Log ingestion complete: "
-                            + outputPath.toAbsolutePath()
-            );
-
-            /*
-             * --------------------------------------------------
-             * 2. DETECT LOG FORMAT
-             * --------------------------------------------------
-             */
-
-            FormatDetector formatDetector =
-                    new FormatDetector();
-
-            LogFormat format =
-                    formatDetector.detect(clientId);
-
-            System.out.println(
-                    "DETECTED FORMAT: "
-                            + format.getName()
-            );
-
-            System.out.println(
-                    "FORMAT ID: "
-                            + format.getFormatId()
-            );
-
-            System.out.println(
-                    "SELECTED PARSER: "
-                            + format.getParser()
-            );
-
-            System.out.println(
-                    "CONFIDENCE: "
-                            + format.getConfidence()
-            );
-
-            /*
-             * Store the detected format in the
-             * processing context.
-             */
-            ProcessingContext processingContext =
-                    new ProcessingContext();
-
-            processingContext.setLogFormat(format);
-
-            /*
-             * --------------------------------------------------
-             * 3. NORMALIZE EVENTS
-             * --------------------------------------------------
-             *
-             * Normalizer receives the complete LogFormat.
-             *
-             * The parser is selected using:
-             *
-             *     format.getParser()
-             *
-             * The normalization mapping is selected using:
-             *
-             *     format.getFormatId()
-             */
-
-            Normalizer normalizer =
-                    new Normalizer(
-                            format,
-                            outputPath
-                    );
-
-            List<NormalizedEvent> eventList =
-                    normalizer.normalize();
-
-            System.out.println(
-                    "NORMALIZED EVENTS: "
-                            + eventList.size()
-            );
-
-            /*
-             * Display first three normalized events.
-             */
-            eventList.stream()
-                    .limit(3)
-                    .forEach(event -> {
-
-                        System.out.println(
-                                "================================"
-                        );
-
-                        System.out.println(
-                                "ID: "
-                                        + event.getId()
-                        );
-
-                        System.out.println(
-                                "TIMESTAMP: "
-                                        + event.getTimestamp()
-                        );
-
-                        System.out.println(
-                                "SOURCE: "
-                                        + event.getSource()
-                        );
-
-                        System.out.println(
-                                "OCCURRENCE: "
-                                        + event.getOccurrence()
-                        );
-
-                        System.out.println(
-                                "CONTEXT: "
-                                        + event.getContext()
-                        );
-
-                        System.out.println(
-                                "METADATA: "
-                                        + event.getMetadata()
-                        );
-                    });
-
-            /*
-             * --------------------------------------------------
-             * 4. STORE NORMALIZED EVENTS
-             * --------------------------------------------------
-             */
-
-            EventRepository eventRepository =
-                    new EventRepository();
-
-            eventRepository.deleteAll(clientId);
-
-            eventRepository.saveAll(
-                    clientId,
-                    eventList
-            );
-
-            System.out.println(
-                    "Successfully saved "
-                            + eventList.size()
-                            + " events."
-            );
-
-            /*
-             * --------------------------------------------------
-             * 5. CORRELATE EVENTS
-             * --------------------------------------------------
-             */
-
-            CorrelationEngine correlationEngine =
-                    new CorrelationEngine(
-                            clientId,
-                            processingContext
-                    );
-
-            List<CorrelationResult> results =
-                    correlationEngine.runCorrelate(
-                            seconds
-                    );
-
-            List<NormalizedEvent> allEvents =
-                    correlationEngine.getEvents();
-
-            CorrelationBundle bundle =
-                    correlationEngine.getBundle();
-
-            System.out.println(
-                    "CORRELATION RESULTS: "
-                            + results.size()
-            );
-
-            System.out.println(
-                    "ALL EVENTS: "
-                            + allEvents.size()
-            );
-
-            /*
-             * --------------------------------------------------
-             * 6. BUILD EVENT GRAPH
-             * --------------------------------------------------
-             */
-
-            EventGraph eventGraph =
-                    new EventGraph(clientId);
-
-            GraphBuilder graphBuilder =
-                    new GraphBuilder(eventGraph);
-
-            graphBuilder.build(
-                    allEvents,
-                    results,
-                    bundle
-            );
-
-            /*
-             * --------------------------------------------------
-             * 7. DETECT FAILURE EVENTS
-             * --------------------------------------------------
-             */
-
-            FailureIncidentDetector
-                    failureIncidentDetector =
-                    new FailureIncidentDetector(
-                            clientId
-                    );
-
-            List<String> failureIds =
-                    failureIncidentDetector
-                            .detectFailureEventIds();
-
-            List<NormalizedEvent> failureEvents =
-                    failureIncidentDetector
-                            .detectFailureEvent(
-                                    failureIds
-                            );
-
-            System.out.println(
-                    "FAILURE IDS: "
-                            + failureIds.size()
-            );
-
-            System.out.println(
-                    "FAILURE EVENTS: "
-                            + failureEvents.size()
-            );
-
-            /*
-             * --------------------------------------------------
-             * 8. BUILD FAILURE CONTEXTS
-             * --------------------------------------------------
-             */
-
-            FailureContextService
-                    failureContextService =
-                    new FailureContextService();
-
-            List<FailureContext> contexts =
-                    failureContextService.buildAll(
-                            eventGraph,
-                            failureEvents,
-                            threshold
-                    );
-
-            System.out.println(
-                    "FAILURE CONTEXTS: "
-                            + contexts.size()
-            );
-
-            /*
-             * --------------------------------------------------
-             * 9. BUILD INCIDENTS
-             * --------------------------------------------------
-             */
-
-            IncidentService incidentService =
-                    new IncidentService();
-
-            List<Incident> incidents =
-                    incidentService.buildIncidents(
-                            contexts
-                    );
-
-            System.out.println(
-                    "INCIDENTS: "
-                            + incidents.size()
-            );
-
-            /*
-             * --------------------------------------------------
-             * 10. GROUP INCIDENTS
-             * --------------------------------------------------
-             */
-
-            IncidentGroupingService
-                    incidentGroupingService =
-                    new IncidentGroupingService();
-
-            List<IncidentGroup> incidentGroups =
-                    incidentGroupingService.buildGroups(
-                            incidents
-                    );
-
-            System.out.println(
-                    "INCIDENT GROUPS: "
-                            + incidentGroups.size()
-            );
-
-            /*
-             * --------------------------------------------------
-             * 11. DISPLAY INCIDENT GROUPS
-             * --------------------------------------------------
-             */
-
-            if (print) {
-
-                incidentGroupingService
-                        .viewAllGroups();
-            }
-
-            return incidentGroups;
-
-        } finally {
-
-            /*
-             * --------------------------------------------------
-             * CLEANUP CLIENT RESOURCES
-             * --------------------------------------------------
-             */
-
-            NitriteMultiTenantConfig.closeClient(
-                    clientId
-            );
+        public InitBugLens(DashboardService dashboardService) {
+                this.dashboardService = dashboardService;
         }
-    }
 
-    public static void main(String[] args)
-            throws IOException,
-            IllegalArgumentException,
-            IllegalAccessException {
+        public AnalysisResponse run(
+                        String clientId,
+                        Path inputPath,
+                        long seconds,
+                        double threshold,
+                        boolean print)
+                        throws IOException,
+                        IllegalArgumentException,
+                        IllegalAccessException {
 
-        InitBugLens initBugLens =
-                new InitBugLens();
+                BugLensPaths.printPaths();
 
-        initBugLens.run(
-                "003",
-                Paths.get("buglens/src/test.log"),
-                10,
-                0.80,
-                true
-        );
-    }
+                try {
+
+                        /*
+                         * --------------------------------------------------
+                         * 1. COLLECT RAW LOG DATA
+                         * --------------------------------------------------
+                         */
+
+                        Path outputDirectory = BugLensPaths.LOGS_DIR;
+
+                        CollectorEngine collectorEngine = new CollectorEngine(
+                                        inputPath,
+                                        outputDirectory,
+                                        clientId);
+
+                        collectorEngine.collectJson();
+
+                        Path outputPath = collectorEngine.getOutputPath();
+
+                        System.out.println(
+                                        "Log ingestion complete: "
+                                                        + outputPath.toAbsolutePath());
+
+                        /*
+                         * --------------------------------------------------
+                         * 2. DETECT LOG FORMAT
+                         * --------------------------------------------------
+                         */
+
+                        FormatDetector formatDetector = new FormatDetector();
+
+                        LogFormat format = formatDetector.detect(clientId);
+
+                        System.out.println(
+                                        "DETECTED FORMAT: "
+                                                        + format.getName());
+
+                        System.out.println(
+                                        "FORMAT ID: "
+                                                        + format.getFormatId());
+
+                        System.out.println(
+                                        "SELECTED PARSER: "
+                                                        + format.getParser());
+
+                        System.out.println(
+                                        "CONFIDENCE: "
+                                                        + format.getConfidence());
+
+                        /*
+                         * Store the detected format in the
+                         * processing context.
+                         */
+                        ProcessingContext processingContext = new ProcessingContext();
+
+                        processingContext.setLogFormat(format);
+
+                        /*
+                         * --------------------------------------------------
+                         * 3. NORMALIZE EVENTS
+                         * --------------------------------------------------
+                         *
+                         * Normalizer receives the complete LogFormat.
+                         *
+                         * The parser is selected using:
+                         *
+                         * format.getParser()
+                         *
+                         * The normalization mapping is selected using:
+                         *
+                         * format.getFormatId()
+                         */
+
+                        Normalizer normalizer = new Normalizer(
+                                        format,
+                                        outputPath);
+
+                        List<NormalizedEvent> eventList = normalizer.normalize();
+
+                        System.out.println(
+                                        "NORMALIZED EVENTS: "
+                                                        + eventList.size());
+
+                        /*
+                         * Display first three normalized events.
+                         */
+                        eventList.stream()
+                                        .limit(3)
+                                        .forEach(event -> {
+
+                                                System.out.println(
+                                                                "================================");
+
+                                                System.out.println(
+                                                                "ID: "
+                                                                                + event.getId());
+
+                                                System.out.println(
+                                                                "TIMESTAMP: "
+                                                                                + event.getTimestamp());
+
+                                                System.out.println(
+                                                                "SOURCE: "
+                                                                                + event.getSource());
+
+                                                System.out.println(
+                                                                "OCCURRENCE: "
+                                                                                + event.getOccurrence());
+
+                                                System.out.println(
+                                                                "CONTEXT: "
+                                                                                + event.getContext());
+
+                                                System.out.println(
+                                                                "METADATA: "
+                                                                                + event.getMetadata());
+                                        });
+
+                        /*
+                         * --------------------------------------------------
+                         * 4. STORE NORMALIZED EVENTS
+                         * --------------------------------------------------
+                         */
+
+                        EventRepository eventRepository = new EventRepository();
+
+                        eventRepository.deleteAll(clientId);
+
+                        eventRepository.saveAll(
+                                        clientId,
+                                        eventList);
+
+                        System.out.println(
+                                        "Successfully saved "
+                                                        + eventList.size()
+                                                        + " events.");
+
+                        /*
+                         * --------------------------------------------------
+                         * 5. CORRELATE EVENTS
+                         * --------------------------------------------------
+                         */
+
+                        CorrelationEngine correlationEngine = new CorrelationEngine(
+                                        clientId,
+                                        processingContext);
+
+                        List<CorrelationResult> results = correlationEngine.runCorrelate(
+                                        seconds);
+
+                        List<NormalizedEvent> allEvents = correlationEngine.getEvents();
+
+                        CorrelationBundle bundle = correlationEngine.getBundle();
+
+                        System.out.println(
+                                        "CORRELATION RESULTS: "
+                                                        + results.size());
+
+                        System.out.println(
+                                        "ALL EVENTS: "
+                                                        + allEvents.size());
+
+                        /*
+                         * --------------------------------------------------
+                         * 6. BUILD EVENT GRAPH
+                         * --------------------------------------------------
+                         */
+
+                        EventGraph eventGraph = new EventGraph(clientId);
+
+                        GraphBuilder graphBuilder = new GraphBuilder(eventGraph);
+
+                        graphBuilder.build(
+                                        allEvents,
+                                        results,
+                                        bundle);
+
+                        /*
+                         * --------------------------------------------------
+                         * 7. DETECT FAILURE EVENTS
+                         * --------------------------------------------------
+                         */
+
+                        FailureIncidentDetector failureIncidentDetector = new FailureIncidentDetector(
+                                        clientId);
+
+                        List<String> failureIds = failureIncidentDetector
+                                        .detectFailureEventIds();
+
+                        List<NormalizedEvent> failureEvents = failureIncidentDetector
+                                        .detectFailureEvent(
+                                                        failureIds);
+
+                        System.out.println(
+                                        "FAILURE IDS: "
+                                                        + failureIds.size());
+
+                        System.out.println(
+                                        "FAILURE EVENTS: "
+                                                        + failureEvents.size());
+
+                        /*
+                         * --------------------------------------------------
+                         * 8. BUILD FAILURE CONTEXTS
+                         * --------------------------------------------------
+                         */
+
+                        FailureContextService failureContextService = new FailureContextService();
+
+                        List<FailureContext> contexts = failureContextService.buildAll(
+                                        eventGraph,
+                                        failureEvents,
+                                        threshold);
+
+                        System.out.println(
+                                        "FAILURE CONTEXTS: "
+                                                        + contexts.size());
+
+                        /*
+                         * --------------------------------------------------
+                         * 9. BUILD INCIDENTS
+                         * --------------------------------------------------
+                         */
+
+                        IncidentService incidentService = new IncidentService();
+
+                        List<Incident> incidents = incidentService.buildIncidents(
+                                        contexts);
+
+                        System.out.println(
+                                        "INCIDENTS: "
+                                                        + incidents.size());
+                        incidents.forEach(System.out::println);
+
+                        DashboardResponse dashboard = this.dashboardService.getDashboard(incidents);
+
+                        /*
+                         * --------------------------------------------------
+                         * 10. RETURN INCIDENTS
+                         * --------------------------------------------------
+                         */
+
+                        return new AnalysisResponse(dashboard, incidents);
+
+                } finally {
+
+                        /*
+                         * --------------------------------------------------
+                         * CLEANUP CLIENT RESOURCES
+                         * --------------------------------------------------
+                         */
+
+                        NitriteMultiTenantConfig.closeClient(
+                                        clientId);
+                }
+        }
+
+        public static void main(String[] args)
+                        throws IOException,
+                        IllegalArgumentException,
+                        IllegalAccessException {
+
+                DashboardService dashboardService = new DashboardService();
+
+                InitBugLens initBugLens = new InitBugLens(dashboardService);
+
+                AnalysisResponse response = initBugLens.run(
+                                "003",
+                                Paths.get("buglens/src/test.log"),
+                                10,
+                                0.80,
+                                true);
+
+                response.getIncidents()
+                                .forEach(System.out::println);
+
+        }
 }

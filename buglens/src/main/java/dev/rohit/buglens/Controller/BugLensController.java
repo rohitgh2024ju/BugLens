@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import dev.rohit.buglens.Application.AnalysisResponse;
 import dev.rohit.buglens.Application.InitBugLens;
 import dev.rohit.buglens.ClientLifecycleEngine.service.ClientLifecycleService;
 import dev.rohit.buglens.Configpaths.BugLensPaths;
+import dev.rohit.buglens.IncidentEngine.model.Incident;
 import dev.rohit.buglens.IncidentGroupingEngine.model.IncidentGroup;
 
 @RestController
@@ -48,13 +50,13 @@ public class BugLensController {
 
                 Path uploadedFile = saveFile(file, clientId);
 
-                List<IncidentGroup> groups = initBugLens.run(
+                AnalysisResponse response = initBugLens.run(
                                 clientId,
                                 uploadedFile,
                                 10,
                                 0.80, false);
 
-                return ResponseEntity.ok(groups);
+                return ResponseEntity.ok(response);
         }
 
         private Path saveFile(MultipartFile file, String clientId)

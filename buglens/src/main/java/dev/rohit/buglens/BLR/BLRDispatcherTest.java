@@ -25,8 +25,7 @@ public class BLRDispatcherTest {
                 format,
                 rawLogLine);
 
-        System.out.println(
-                "===== DISPATCHER TEST =====");
+
 
         System.out.println(
                 result.toString(4));
