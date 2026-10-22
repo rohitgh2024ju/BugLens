@@ -17,324 +17,289 @@ import dev.rohit.buglens.ParserEngine.ParserEngine;
 
 public class Normalizer {
 
-    private final LogFormat logFormat;
-    private final Path inputPath;
+        private final LogFormat logFormat;
+        private final Path inputPath;
 
-    public Normalizer(
-            LogFormat logFormat,
-            Path inputPath) {
+        public Normalizer(
+                        LogFormat logFormat,
+                        Path inputPath) {
 
-        if (logFormat == null) {
-            throw new IllegalArgumentException(
-                    "Log format is required"
-            );
+                if (logFormat == null) {
+                        throw new IllegalArgumentException(
+                                        "Log format is required");
+                }
+
+                if (inputPath == null) {
+                        throw new IllegalArgumentException(
+                                        "Input path is required");
+                }
+
+                this.logFormat = logFormat;
+                this.inputPath = inputPath;
         }
 
-        if (inputPath == null) {
-            throw new IllegalArgumentException(
-                    "Input path is required"
-            );
-        }
+        public List<NormalizedEvent> normalize() {
 
-        this.logFormat = logFormat;
-        this.inputPath = inputPath;
-    }
+                List<NormalizedEvent> normalizedEvents = new ArrayList<>();
 
-    public List<NormalizedEvent> normalize() {
+                try {
 
-        List<NormalizedEvent> normalizedEvents =
-                new ArrayList<>();
+                        /*
+                         * --------------------------------------------------
+                         * 1. GET FORMAT ID
+                         * --------------------------------------------------
+                         *
+                         * Example:
+                         *
+                         * formatId = "spring_boot"
+                         *
+                         * This identifies the log format and is used
+                         * by the MappingLoader.
+                         */
+                        String formatId = logFormat.getFormatId();
 
-        try {
+                        /*
+                         * --------------------------------------------------
+                         * 2. PARSE LOGS
+                         * --------------------------------------------------
+                         *
+                         * ParserEngine uses the parser information inside
+                         * LogFormat to select the correct BLR parser.
+                         */
+                        ParserEngine parserEngine = new ParserEngine(inputPath);
 
-            /*
-             * --------------------------------------------------
-             * 1. GET FORMAT ID
-             * --------------------------------------------------
-             *
-             * Example:
-             *
-             * formatId = "spring_boot"
-             *
-             * This identifies the log format and is used
-             * by the MappingLoader.
-             */
-            String formatId =
-                    logFormat.getFormatId();
+                        JSONArray parsedLogArray = parserEngine.runParser(logFormat);
 
-            /*
-             * --------------------------------------------------
-             * 2. PARSE LOGS
-             * --------------------------------------------------
-             *
-             * ParserEngine uses the parser information inside
-             * LogFormat to select the correct BLR parser.
-             */
-            ParserEngine parserEngine =
-                    new ParserEngine(inputPath);
+                        /*
+                         * --------------------------------------------------
+                         * 3. LOAD NORMALIZATION MAPPINGS
+                         * --------------------------------------------------
+                         *
+                         * IMPORTANT:
+                         *
+                         * MappingLoader needs the FORMAT ID:
+                         *
+                         * spring_boot
+                         *
+                         * NOT:
+                         *
+                         * SpringBootParser
+                         */
+                        MappingLoader mappingLoader = new MappingLoader();
 
-            JSONArray parsedLogArray =
-                    parserEngine.runParser(logFormat);
+                        List<FieldMapping> classMapping = mappingLoader.loadMapper(formatId);
 
-            /*
-             * --------------------------------------------------
-             * 3. LOAD NORMALIZATION MAPPINGS
-             * --------------------------------------------------
-             *
-             * IMPORTANT:
-             *
-             * MappingLoader needs the FORMAT ID:
-             *
-             *     spring_boot
-             *
-             * NOT:
-             *
-             *     SpringBootParser
-             */
-            MappingLoader mappingLoader =
-                    new MappingLoader();
+                        /*
+                         * --------------------------------------------------
+                         * 4. PRINT DEBUG INFORMATION
+                         * --------------------------------------------------
+                         */
 
-            List<FieldMapping> classMapping =
-                    mappingLoader.loadMapper(formatId);
+                        System.out.println(
+                                        "FORMAT ID: "
+                                                        + formatId);
 
-            /*
-             * --------------------------------------------------
-             * 4. PRINT DEBUG INFORMATION
-             * --------------------------------------------------
-             */
+                        System.out.println(
+                                        "FORMAT NAME: "
+                                                        + logFormat.getName());
 
-            System.out.println(
-                    "FORMAT ID: "
-                            + formatId
-            );
+                        System.out.println(
+                                        "PARSER: "
+                                                        + logFormat.getParser());
 
-            System.out.println(
-                    "FORMAT NAME: "
-                            + logFormat.getName()
-            );
+                        System.out.println(
+                                        "MAPPING COUNT: "
+                                                        + classMapping.size());
 
-            System.out.println(
-                    "PARSER: "
-                            + logFormat.getParser()
-            );
+                        classMapping.forEach(mapping -> System.out.println(
+                                        mapping.getSource()
+                                                        + " -> "
+                                                        + mapping.getTarget()));
 
-            System.out.println(
-                    "MAPPING COUNT: "
-                            + classMapping.size()
-            );
+                        System.out.println(
+                                        "PARSED LOG COUNT: "
+                                                        + parsedLogArray.length());
 
-            classMapping.forEach(mapping ->
-                    System.out.println(
-                            mapping.getSource()
-                                    + " -> "
-                                    + mapping.getTarget()
-                    )
-            );
+                        /*
+                         * --------------------------------------------------
+                         * 5. SHOW FIRST PARSED LOG
+                         * --------------------------------------------------
+                         */
 
-            System.out.println(
-                    "PARSED LOG COUNT: "
-                            + parsedLogArray.length()
-            );
+                        if (!parsedLogArray.isEmpty()) {
 
-            /*
-             * --------------------------------------------------
-             * 5. SHOW FIRST PARSED LOG
-             * --------------------------------------------------
-             */
+                                System.out.println(
+                                                "FIRST PARSED LOG: "
+                                                                + parsedLogArray
+                                                                                .getJSONObject(0)
+                                                                                .toString(2));
+                        }
 
-            if (!parsedLogArray.isEmpty()) {
+                        /*
+                         * --------------------------------------------------
+                         * 6. NO PARSED LOGS
+                         * --------------------------------------------------
+                         */
 
-                System.out.println(
-                        "FIRST PARSED LOG: "
-                                + parsedLogArray
-                                        .getJSONObject(0)
-                                        .toString(2)
-                );
-            }
+                        if (parsedLogArray.isEmpty()) {
+                                return normalizedEvents;
+                        }
 
-            /*
-             * --------------------------------------------------
-             * 6. NO PARSED LOGS
-             * --------------------------------------------------
-             */
+                        /*
+                         * --------------------------------------------------
+                         * 7. NORMALIZE EACH PARSED LOG
+                         * --------------------------------------------------
+                         */
 
-            if (parsedLogArray.isEmpty()) {
+                        for (Object item : parsedLogArray) {
+
+                                if (!(item instanceof JSONObject log)) {
+                                        continue;
+                                }
+
+                                NormalizedEvent event = new NormalizedEvent();
+
+                                /*
+                                 * Generate a unique ID for the normalized event.
+                                 */
+                                event.setId(
+                                                "EVT-" + UUID.randomUUID()
+                                                                .toString()
+                                                                .replace("-", "")
+                                                                .substring(0, 8)
+                                                                .toUpperCase());
+
+                                /*
+                                 * --------------------------------------------------
+                                 * APPLY FIELD MAPPINGS
+                                 * --------------------------------------------------
+                                 */
+
+                                for (FieldMapping mapping : classMapping) {
+
+                                        String sourceKey = mapping.getSource();
+
+                                        String targetKey = mapping.getTarget();
+
+                                        /*
+                                         * Skip fields that are not present
+                                         * in the parsed log.
+                                         */
+                                        if (!log.has(sourceKey)
+                                                        || log.isNull(sourceKey)) {
+
+                                                continue;
+                                        }
+
+                                        Object value = convertJsonValue(
+                                                        log.get(sourceKey));
+
+                                        /*
+                                         * --------------------------------------------------
+                                         * TIMESTAMP
+                                         * --------------------------------------------------
+                                         */
+
+                                        if ("timestamp".equals(targetKey)) {
+
+                                                event.setTimestamp(
+                                                                (Instant) value);
+                                        }
+
+                                        /*
+                                         * --------------------------------------------------
+                                         * NESTED NORMALIZED FIELD
+                                         * --------------------------------------------------
+                                         *
+                                         * Example:
+                                         *
+                                         * source.service
+                                         * occurrence.severity
+                                         * context.requestId
+                                         */
+                                        else if (targetKey.contains(".")) {
+
+                                                String[] parts = targetKey.split(
+                                                                "\\.",
+                                                                2);
+
+                                                event.putField(
+                                                                parts[0],
+                                                                parts[1],
+                                                                value);
+                                        }
+
+                                        /*
+                                         * --------------------------------------------------
+                                         * NON-NESTED FIELD
+                                         * --------------------------------------------------
+                                         *
+                                         * Fields without a namespace are stored
+                                         * inside metadata.
+                                         */
+                                        else {
+
+                                                event.putField(
+                                                                "metadata",
+                                                                targetKey,
+                                                                value);
+                                        }
+                                }
+
+                                normalizedEvents.add(event);
+                        }
+
+                } catch (Exception e) {
+
+                        System.err.println(
+                                        "Error while normalizing logs: "
+                                                        + e.getMessage());
+
+                        e.printStackTrace();
+                }
+
                 return normalizedEvents;
-            }
+        }
 
-            /*
-             * --------------------------------------------------
-             * 7. NORMALIZE EACH PARSED LOG
-             * --------------------------------------------------
-             */
+        /*
+         * --------------------------------------------------
+         * CONVERT JSON VALUES
+         * --------------------------------------------------
+         *
+         * Converts JSONObject / JSONArray recursively into
+         * normal Java Map / List structures.
+         */
+        private Object convertJsonValue(Object value) {
 
-            for (Object item : parsedLogArray) {
+                if (value instanceof JSONObject jsonObject) {
 
-                if (!(item instanceof JSONObject log)) {
-                    continue;
+                        Map<String, Object> map = new HashMap<>();
+
+                        for (String key : jsonObject.keySet()) {
+
+                                map.put(
+                                                key,
+                                                convertJsonValue(
+                                                                jsonObject.get(key)));
+                        }
+
+                        return map;
                 }
 
-                NormalizedEvent event =
-                        new NormalizedEvent();
+                if (value instanceof JSONArray jsonArray) {
 
-                /*
-                 * Generate a unique ID for the normalized event.
-                 */
-                event.setId(
-                        UUID.randomUUID().toString()
-                );
+                        List<Object> list = new ArrayList<>();
 
-                /*
-                 * --------------------------------------------------
-                 * APPLY FIELD MAPPINGS
-                 * --------------------------------------------------
-                 */
+                        for (int i = 0; i < jsonArray.length(); i++) {
 
-                for (FieldMapping mapping :
-                        classMapping) {
+                                list.add(
+                                                convertJsonValue(
+                                                                jsonArray.get(i)));
+                        }
 
-                    String sourceKey =
-                            mapping.getSource();
-
-                    String targetKey =
-                            mapping.getTarget();
-
-                    /*
-                     * Skip fields that are not present
-                     * in the parsed log.
-                     */
-                    if (!log.has(sourceKey)
-                            || log.isNull(sourceKey)) {
-
-                        continue;
-                    }
-
-                    Object value =
-                            convertJsonValue(
-                                    log.get(sourceKey)
-                            );
-
-                    /*
-                     * --------------------------------------------------
-                     * TIMESTAMP
-                     * --------------------------------------------------
-                     */
-
-                    if ("timestamp".equals(targetKey)) {
-
-                        event.setTimestamp(
-                                (Instant) value
-                        );
-                    }
-
-                    /*
-                     * --------------------------------------------------
-                     * NESTED NORMALIZED FIELD
-                     * --------------------------------------------------
-                     *
-                     * Example:
-                     *
-                     * source.service
-                     * occurrence.severity
-                     * context.requestId
-                     */
-                    else if (targetKey.contains(".")) {
-
-                        String[] parts =
-                                targetKey.split(
-                                        "\\.",
-                                        2
-                                );
-
-                        event.putField(
-                                parts[0],
-                                parts[1],
-                                value
-                        );
-                    }
-
-                    /*
-                     * --------------------------------------------------
-                     * NON-NESTED FIELD
-                     * --------------------------------------------------
-                     *
-                     * Fields without a namespace are stored
-                     * inside metadata.
-                     */
-                    else {
-
-                        event.putField(
-                                "metadata",
-                                targetKey,
-                                value
-                        );
-                    }
+                        return list;
                 }
 
-                normalizedEvents.add(event);
-            }
-
-        } catch (Exception e) {
-
-            System.err.println(
-                    "Error while normalizing logs: "
-                            + e.getMessage()
-            );
-
-            e.printStackTrace();
+                return value;
         }
-
-        return normalizedEvents;
-    }
-
-    /*
-     * --------------------------------------------------
-     * CONVERT JSON VALUES
-     * --------------------------------------------------
-     *
-     * Converts JSONObject / JSONArray recursively into
-     * normal Java Map / List structures.
-     */
-    private Object convertJsonValue(Object value) {
-
-        if (value instanceof JSONObject jsonObject) {
-
-            Map<String, Object> map =
-                    new HashMap<>();
-
-            for (String key :
-                    jsonObject.keySet()) {
-
-                map.put(
-                        key,
-                        convertJsonValue(
-                                jsonObject.get(key)
-                        )
-                );
-            }
-
-            return map;
-        }
-
-        if (value instanceof JSONArray jsonArray) {
-
-            List<Object> list =
-                    new ArrayList<>();
-
-            for (int i = 0;
-                    i < jsonArray.length();
-                    i++) {
-
-                list.add(
-                        convertJsonValue(
-                                jsonArray.get(i)
-                        )
-                );
-            }
-
-            return list;
-        }
-
-        return value;
-    }
 }

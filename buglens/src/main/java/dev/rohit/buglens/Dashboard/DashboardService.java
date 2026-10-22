@@ -15,7 +15,6 @@ import dev.rohit.buglens.IncidentEngine.model.FailureContext;
 public class DashboardService {
 
     public DashboardResponse getDashboard(List<Incident> incidents) {
-
         DashboardResponse response = new DashboardResponse();
 
         if (incidents == null || incidents.isEmpty()) {
@@ -132,7 +131,7 @@ public class DashboardService {
 
                     double percentage = total == 0
                             ? 0
-                            : (entry.getValue() * 100.0) / total;
+                            : Math.round((entry.getValue() * 10000.0) / total) / 100.0;
 
                     return new SeverityBreakdown(
                             entry.getKey(),
@@ -162,13 +161,18 @@ public class DashboardService {
                 continue;
             }
 
-            Object service = event.getSource().get("service");
+            Object component = event.getSource().get("component");
 
-            if (service == null) {
+            if (component == null) {
                 continue;
             }
 
-            String serviceName = service.toString();
+            String componentName = component.toString();
+            String serviceName = extractServiceName(componentName);
+
+            if (serviceName == null || serviceName.isBlank()) {
+                continue;
+            }
 
             serviceCounts.put(
                     serviceName,
@@ -185,8 +189,30 @@ public class DashboardService {
                 .toList();
     }
 
-    private long calculateCorrelations(List<Incident> incidents) {
+    private String extractServiceName(String component) {
 
+        if (component == null || component.isBlank()) {
+            return null;
+        }
+
+        int lastDot = component.lastIndexOf('.');
+
+        String className = lastDot >= 0
+                ? component.substring(lastDot + 1)
+                : component;
+
+        if (className.endsWith("Service")) {
+            className = className.substring(
+                    0,
+                    className.length() - "Service".length());
+        }
+
+        return className
+                .replaceAll("([a-z])([A-Z])", "$1-$2")
+                .toLowerCase();
+    }
+
+    private long calculateCorrelations(List<Incident> incidents) {
         long count = 0;
 
         for (Incident incident : incidents) {

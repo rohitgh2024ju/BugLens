@@ -7,7 +7,9 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Spring Boot -->
+    <!-- =========================
+         Spring Boot
+         ========================= -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -15,20 +17,31 @@
         <relativePath/>
     </parent>
 
-    <!-- Project Information -->
+
+    <!-- =========================
+         Project Information
+         ========================= -->
     <groupId>dev.rohit</groupId>
     <artifactId>buglens</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+
     <name>buglens</name>
     <description>BugLens Application</description>
 
-    <!-- Properties -->
+
+    <!-- =========================
+         Properties
+         ========================= -->
     <properties>
         <java.version>21</java.version>
         <nitrite.version>4.3.0</nitrite.version>
+        <lombok.version>1.18.46</lombok.version>
     </properties>
 
-    <!-- Dependency Management -->
+
+    <!-- =========================
+         Dependency Management
+         ========================= -->
     <dependencyManagement>
         <dependencies>
 
@@ -53,19 +66,25 @@
         </dependencies>
     </dependencyManagement>
 
-    <!-- Dependencies -->
+
+    <!-- =========================
+         Dependencies
+         ========================= -->
     <dependencies>
 
+        <!-- =========================
+             Graph
+             ========================= -->
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-core</artifactId>
             <version>1.5.3</version>
         </dependency>
 
+
         <!-- =========================
              Nitrite Database
              ========================= -->
-
         <dependency>
             <groupId>org.dizitart</groupId>
             <artifactId>nitrite</artifactId>
@@ -85,7 +104,6 @@
         <!-- =========================
              Spring Boot
              ========================= -->
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -105,7 +123,6 @@
         <!-- =========================
              Jackson XML
              ========================= -->
-
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
@@ -115,11 +132,10 @@
         <!-- =========================
              Lombok
              ========================= -->
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.46</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -127,7 +143,6 @@
         <!-- =========================
              JSON
              ========================= -->
-
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
@@ -136,9 +151,26 @@
 
 
         <!-- =========================
+             Google Gemini
+             ========================= -->
+        <dependency>
+            <groupId>com.google.genai</groupId>
+            <artifactId>google-genai</artifactId>
+            <version>1.73.0</version>
+        </dependency>
+
+        <!-- Required by Google GenAI -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.2.1-jre</version>
+            <scope>compile</scope>
+        </dependency>
+
+
+        <!-- =========================
              Development
              ========================= -->
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -150,33 +182,57 @@
         <!-- =========================
              Testing
              ========================= -->
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>de.kherud</groupId>
+            <artifactId>llama</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>5.14.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-ollama</artifactId>
+            <version>0.35.0</version>
+        </dependency>
+
     </dependencies>
 
 
-    <!-- Build Configuration -->
+    <!-- =========================
+         Build Configuration
+         ========================= -->
     <build>
         <plugins>
 
-            <!-- Maven Compiler -->
+            <!-- =========================
+                 Maven Compiler
+                 ========================= -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.14.1</version>
 
                 <configuration>
+                    <release>21</release>
+
                     <annotationProcessorPaths>
 
                         <!-- Lombok Annotation Processor -->
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.46</version>
+                            <version>${lombok.version}</version>
                         </path>
 
                     </annotationProcessorPaths>
@@ -184,20 +240,19 @@
             </plugin>
 
 
-            <!-- Spring Boot Maven Plugin -->
+            <!-- =========================
+                 Spring Boot Maven Plugin
+                 ========================= -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
 
                 <configuration>
                     <excludes>
-
-                        <!-- Don't package Lombok -->
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                         </exclude>
-
                     </excludes>
                 </configuration>
             </plugin>

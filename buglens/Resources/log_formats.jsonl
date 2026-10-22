@@ -29,6 +29,12 @@
       "name": "JSON Structured Log",
       "structure": "{JSON_OBJECT}",
       "parser": "JsonLogParser"
+    },
+        {
+      "format_id": "python",
+      "name": "Python Logging Format",
+      "structure": "{TIMESTAMP} {SEPARATOR} {LOGGER_NAME} {SEPARATOR} {SEVERITY} {SEPARATOR} {MESSAGE}",
+      "parser": "PythonLogParser"
     }
   ]
 }

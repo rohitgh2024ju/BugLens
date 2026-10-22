@@ -11,6 +11,7 @@ import dev.rohit.buglens.IncidentEngine.detector.FailureIncidentDetector;
 import dev.rohit.buglens.IncidentEngine.model.FailureContext;
 import dev.rohit.buglens.IncidentEngine.service.FailureContextService;
 import dev.rohit.buglens.IncidentEngine.service.IncidentService;
+import dev.rohit.buglens.IncidentMetadata.IncidentMetadataService;
 import dev.rohit.buglens.IngestionEngine.context.ProcessingContext;
 import dev.rohit.buglens.IngestionEngine.format.FormatDetector;
 import dev.rohit.buglens.IngestionEngine.format.LogFormat;
@@ -69,7 +70,9 @@ public class IncidentEngine {
                 /*
                  * Build Incidents
                  */
-                IncidentService incidentService = new IncidentService();
+
+                IncidentMetadataService incidentMetadataService = new IncidentMetadataService();
+                IncidentService incidentService = new IncidentService(incidentMetadataService);
                 incidentService.buildIncidents(contexts);
                 incidentService.viewAllIncidents();
         }

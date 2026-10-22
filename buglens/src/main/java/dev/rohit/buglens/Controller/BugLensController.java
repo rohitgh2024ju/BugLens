@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -18,8 +17,6 @@ import dev.rohit.buglens.Application.AnalysisResponse;
 import dev.rohit.buglens.Application.InitBugLens;
 import dev.rohit.buglens.ClientLifecycleEngine.service.ClientLifecycleService;
 import dev.rohit.buglens.Configpaths.BugLensPaths;
-import dev.rohit.buglens.IncidentEngine.model.Incident;
-import dev.rohit.buglens.IncidentGroupingEngine.model.IncidentGroup;
 
 @RestController
 @RequestMapping("/api/buglens")

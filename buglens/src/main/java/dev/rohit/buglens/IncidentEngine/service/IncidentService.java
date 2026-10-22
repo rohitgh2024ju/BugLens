@@ -8,12 +8,19 @@ import java.util.UUID;
 
 import dev.rohit.buglens.IncidentEngine.model.FailureContext;
 import dev.rohit.buglens.IncidentEngine.model.Incident;
+import dev.rohit.buglens.IncidentMetadata.IncidentMetadata;
+import dev.rohit.buglens.IncidentMetadata.IncidentMetadataService;
 import dev.rohit.buglens.NormalizerEngine.model.NormalizedEvent;
 
 public class IncidentService {
 
     private static final double OVERLAP_THRESHOLD = 0.60;
     private List<Incident> incidents = new ArrayList<>();
+    private final IncidentMetadataService incidentMetadataService;
+
+    public IncidentService(IncidentMetadataService incidentMetadataService) {
+        this.incidentMetadataService = incidentMetadataService;
+    }
 
     public List<Incident> buildIncidents(
             List<FailureContext> contexts) {
@@ -49,7 +56,12 @@ public class IncidentService {
 
                 Incident incident = new Incident(
                         incidentId,
+                        null,
                         incidentContexts);
+
+                IncidentMetadata metadata = this.incidentMetadataService.generate(incident);
+
+                incident.setMetadata(metadata);
 
                 this.incidents.add(incident);
             }

@@ -21,6 +21,7 @@ import dev.rohit.buglens.IncidentEngine.model.FailureContext;
 import dev.rohit.buglens.IncidentEngine.model.Incident;
 import dev.rohit.buglens.IncidentEngine.service.FailureContextService;
 import dev.rohit.buglens.IncidentEngine.service.IncidentService;
+import dev.rohit.buglens.IncidentMetadata.IncidentMetadataService;
 import dev.rohit.buglens.IngestionEngine.context.ProcessingContext;
 import dev.rohit.buglens.IngestionEngine.format.FormatDetector;
 import dev.rohit.buglens.IngestionEngine.format.LogFormat;
@@ -273,8 +274,9 @@ public class InitBugLens {
                          * 9. BUILD INCIDENTS
                          * --------------------------------------------------
                          */
-
-                        IncidentService incidentService = new IncidentService();
+                        
+                        IncidentMetadataService incidentMetadataService = new IncidentMetadataService();
+                        IncidentService incidentService = new IncidentService(incidentMetadataService);
 
                         List<Incident> incidents = incidentService.buildIncidents(
                                         contexts);
