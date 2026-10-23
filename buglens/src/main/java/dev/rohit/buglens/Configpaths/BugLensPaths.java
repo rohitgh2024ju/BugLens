@@ -16,14 +16,19 @@ public final class BugLensPaths {
 
         public static final Path LOG_FORMATS_FILE = RESOURCES_DIR.resolve("log_formats.jsonl");
 
-        public static final Path NORMALIZATION_MAPPING_FILE = BASE_DIR.resolve("config")
-                        .resolve("normalization-mapping.xml");
+        public static final Path CONFIG_DIR = BASE_DIR.resolve("config");
+
+        public static final Path NORMALIZATION_MAPPING_FILE = CONFIG_DIR.resolve("normalization-mapping.xml");
+
+        public static final Path FILE_HASHES_CONFIG = CONFIG_DIR.resolve("file_hashes.json");
 
         public static void printPaths() {
                 System.out.println("BUGLENS BASE DIR: " + BASE_DIR);
                 System.out.println("DATABASE DIR: " + DATABASE_DIR);
                 System.out.println("LOGS DIR: " + LOGS_DIR);
                 System.out.println("RESOURCES DIR: " + RESOURCES_DIR);
+                System.out.println("CONFIG DIR: " + CONFIG_DIR);
+                System.out.println("FILE HASHES CONFIG: " + FILE_HASHES_CONFIG);
                 System.out.println("NORMALIZATION DIR: " + NORMALIZATION_MAPPING_FILE);
         }
 
