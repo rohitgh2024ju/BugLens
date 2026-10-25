@@ -22,6 +22,8 @@ public final class BugLensPaths {
 
         public static final Path FILE_HASHES_CONFIG = CONFIG_DIR.resolve("file_hashes.json");
 
+        public static final Path ANALYSIS_CACHE_DIR = BASE_DIR.resolve("cache").resolve("analysis");
+
         public static void printPaths() {
                 System.out.println("BUGLENS BASE DIR: " + BASE_DIR);
                 System.out.println("DATABASE DIR: " + DATABASE_DIR);

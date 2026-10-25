@@ -7,6 +7,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class HashService {
 
+    public String generateFileHash(String clientId, String fileName, long fileSize) {
+        return FileHashGenerator.generateHash(clientId, fileName, fileSize);
+    }
+
     public Boolean initiateService(
             String clientId, String fileName, long fileSize)
             throws IOException {
@@ -20,10 +24,6 @@ public class HashService {
 
         boolean sameHash = manager.isHashEquals(hash, clientId);
 
-        if (sameHash) {
-            return true;
-        }
-
-        return false;
+        return sameHash;
     }
 }
